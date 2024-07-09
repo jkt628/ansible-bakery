@@ -1,0 +1,12 @@
+rootdev=UUID=61fa30a1-813a-44fd-8723-a703e59cbe6c
+rootfstype=ext4
+# The init system logs to the console defined last.
+consoleargs=console=ttyS0,115200 console=tty1
+usbstoragequirks=
+extraargs=net.ifnames=0
+docker_optimizations=off
+overlay_path=allwinner
+overlay_prefix=sun50i-h616
+overlays=
+user_overlays=
+fdtfile=allwinner/sun50i-h618-orangepi-zero2w.dtb
