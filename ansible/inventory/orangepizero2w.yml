@@ -1,0 +1,6 @@
+myhosts:
+  hosts:
+    orangepizero2w:
+      ansible_user: jkt
+    jkt-rv-ha:
+      ansible_user: jkt

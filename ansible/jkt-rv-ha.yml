@@ -1,0 +1,75 @@
+- name: install junctek_monitor
+  hosts: jkt-rv-ha
+  become: true
+  tasks:
+  - name: Include vars
+    ansible.builtin.include_vars:
+      dir: vars
+  - name: Get installed packages
+    ansible.builtin.package_facts:
+  - name: Install pipx
+    ansible.builtin.package:
+      name: "{{ item }}"
+    with_items:
+    - pipx
+    - git
+    when: item not in ansible_facts.packages
+  - name: Install missing packages
+    ansible.builtin.package:
+      name: "{{ item }}"
+    with_items: "{{ junctek_monitor_packages }}"
+    when: item not in ansible_facts.packages
+  - name: Install junctek_monitor
+    community.general.pipx:
+      name: junctek_monitor
+      source: git+https://github.com/jkt628/junctek_monitor.git@pipx
+      system_site_packages: true
+  - name: Locate junctek_monitor configuration
+    ansible.builtin.find:
+      paths: /root/.local/pipx/venvs/junctek-monitor
+      recurse: true
+      patterns: config.py
+    register: junctek_monitor_config
+  - name: Configure junctek_monitor
+    ansible.builtin.copy:
+      dest: "{{ junctek_monitor_config.files[0].path }}"
+      content: |
+        # MQTT Server Info
+        MQTT_HOST = 'localhost'
+        MQTT_USER = "{{ lookup('ansible.builtin.env', 'USERNAME', default=Undefined) }}"
+        MQTT_PASS = "{{ lookup('ansible.builtin.env', 'PASSWORD', default=Undefined) }}"
+        # Mac Address of the Juntec BT
+        JUNTEC_ADDR = "38:3B:26:2E:B8:EE"
+        # Battery Bank Capacity in Ah
+        BATT_CAP = 300
+  - name: Install junctek_monitor systemd service
+    ansible.builtin.copy:
+      dest: /etc/systemd/system/junctek_monitor.service
+      content: |
+        [Unit]
+        Description=Junctek Monitor Service
+        After=docker.target
+        [Service]
+        Type=simple
+        ExecStart=/root/.local/bin/BTjuntek --quiet
+        [Install]
+        WantedBy=multi-user.target
+  - name: Install junctek_monitor systemd timer
+    ansible.builtin.copy:
+      dest: /etc/systemd/system/junctek_monitor.timer
+      content: |
+        [Unit]
+        Description=Junctek Monitor Timer
+        After=docker.target
+        [Timer]
+        Unit=junctek_monitor.service
+        OnCalendar=*-*-* *:*:00
+        [Install]
+        WantedBy=multi-user.target
+  - name: Reload systemd
+    ansible.builtin.systemd_service:
+      name: junctek_monitor.timer
+      enabled: true
+      state: started
+      daemon_reload: yes
+      no_block: true

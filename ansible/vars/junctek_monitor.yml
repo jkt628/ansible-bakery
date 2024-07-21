@@ -1,0 +1,5 @@
+junctek_monitor_packages:
+- python3-bleak
+- python3-paho-mqtt
+- python3-serial
+- python3-yaml

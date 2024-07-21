@@ -1,0 +1,25 @@
+- name: rename from orangepizero2w to jkt-rv-ha
+  hosts: myhosts
+  become: true
+  tasks:
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: jkt-rv-ha
+        use: debian
+    - name: Set hosts
+      ansible.builtin.replace:
+        path: /etc/hosts
+        regexp: orangepizero2w
+        replace: jkt-rv-ha
+    - name: Configure sudo
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/%sudo
+        content: |
+          %sudo ALL=(ALL) NOPASSWD: ALL
+- name: rename from orangepizero2w to jkt-rv-ha
+  hosts: orangepizero2w
+  become: true
+  tasks:
+    - name: Reboot
+      ansible.builtin.reboot:
+        pre_reboot_delay: 10
