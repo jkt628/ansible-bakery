@@ -1,5 +1,5 @@
 - name: install junctek_monitor
-  hosts: jkt-rv-ha
+  hosts: rv_ha
   become: true
   tasks:
   - name: Include vars

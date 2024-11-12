@@ -1,6 +1,10 @@
-myhosts:
+bare:
   hosts:
     orangepizero2w:
       ansible_user: jkt
+rv_ha:
+  hosts:
     jkt-rv-ha:
+      ansible_user: jkt
+    jkt-rv:
       ansible_user: jkt

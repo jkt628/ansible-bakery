@@ -1,5 +1,5 @@
 - name: rename from orangepizero2w to jkt-rv-ha
-  hosts: myhosts
+  hosts: bare
   become: true
   tasks:
     - name: Set hostname
