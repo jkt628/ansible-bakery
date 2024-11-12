@@ -113,3 +113,9 @@
       state: started
       daemon_reload: yes
       no_block: true
+
+  - name: Install remote desktop
+    ansible.builtin.package:
+      name: "{{ item }}"
+    with_items: "{{ remote_desktop_packages }}"
+    when: item not in ansible_facts.packages
