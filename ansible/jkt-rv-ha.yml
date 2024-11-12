@@ -7,6 +7,46 @@
       dir: vars
   - name: Get installed packages
     ansible.builtin.package_facts:
+
+  # switch mDNS from avahi to systemd-resolved
+  - name: Remove avahi
+    ansible.builtin.package:
+      name: "{{ item }}"
+      state: absent
+    with_items: "{{ avahi_packages }}"
+    when: item in ansible_facts.packages
+  - name: Create /etc/systemd/resolved.conf.d
+    ansible.builtin.file:
+      path: /etc/systemd/resolved.conf.d
+      state: directory
+  - name: Enable systemd-resolved DNS Stub
+    ansible.builtin.copy:
+      dest: /etc/systemd/resolved.conf.d/stub.conf
+      content: |
+        [Resolve]
+        DNSStubListener=yes
+  - name: Restart systemd-resolved
+    ansible.builtin.systemd:
+      name: systemd-resolved
+      state: restarted
+  - name: Switch NetworkManager to systemd-resolved
+    ansible.builtin.copy:
+      dest: /etc/NetworkManager/conf.d/dns.conf
+      content: |
+        [main]
+        dns=systemd-resolved
+  - name: Switch resolv.conf to systemd-resolved
+    ansible.builtin.file:
+      path: /etc/resolv.conf
+      state: link
+      src: /usr/lib/systemd/resolv.conf
+      force: true
+  - name: Restart NetworkManager
+    ansible.builtin.systemd:
+      name: NetworkManager
+      state: restarted
+
+  # install juntek_monitor
   - name: Install pipx
     ansible.builtin.package:
       name: "{{ item }}"
