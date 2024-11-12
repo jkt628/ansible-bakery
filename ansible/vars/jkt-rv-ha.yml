@@ -1,3 +1,9 @@
+juntek_monitor_packages:
+- python3-bleak
+- python3-configargparse
+- python3-paho-mqtt
+- python3-serial
+- python3-yaml
 avahi_packages:
 - avahi-daemon
 - libavahi-core7

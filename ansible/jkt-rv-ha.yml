@@ -1,4 +1,4 @@
-- name: install junctek_monitor
+- name: install juntek_monitor
   hosts: rv_ha
   become: true
   tasks:
@@ -57,58 +57,46 @@
   - name: Install missing packages
     ansible.builtin.package:
       name: "{{ item }}"
-    with_items: "{{ junctek_monitor_packages }}"
+    with_items: "{{ juntek_monitor_packages }}"
     when: item not in ansible_facts.packages
-  - name: Install junctek_monitor
+  - name: Install juntek_monitor
     community.general.pipx:
-      name: junctek_monitor
-      source: git+https://github.com/jkt628/junctek_monitor.git@pipx
+      name: juntek_monitor
+      source: git+https://github.com/jkt628/juntek_monitor.git@reimagined
       system_site_packages: true
-  - name: Locate junctek_monitor configuration
-    ansible.builtin.find:
-      paths: /root/.local/pipx/venvs/junctek-monitor
+  - name: Create config dir for juntek_monitor
+    ansible.builtin.file:
+      path: /root/.config/juntek_monitor
+      state: directory
       recurse: true
-      patterns: config.py
-    register: junctek_monitor_config
-  - name: Configure junctek_monitor
+  - name: Configure juntek_monitor
     ansible.builtin.copy:
-      dest: "{{ junctek_monitor_config.files[0].path }}"
+      dest: /root/.config/juntek_monitor/config.ini
       content: |
         # MQTT Server Info
-        MQTT_HOST = 'localhost'
-        MQTT_USER = "{{ lookup('ansible.builtin.env', 'USERNAME', default=Undefined) }}"
-        MQTT_PASS = "{{ lookup('ansible.builtin.env', 'PASSWORD', default=Undefined) }}"
+        mqtt_broker = 'localhost'
+        mqtt_username = "{{ lookup('ansible.builtin.env', 'USERNAME', default=Undefined) }}"
+        mqtt_password = "{{ lookup('ansible.builtin.env', 'PASSWORD', default=Undefined) }}"
         # Mac Address of the Juntec BT
-        JUNTEC_ADDR = "38:3B:26:2E:B8:EE"
+        juntek_addr = "38:3B:26:2E:B8:EE"
         # Battery Bank Capacity in Ah
-        BATT_CAP = 300
-  - name: Install junctek_monitor systemd service
+        battery_capacity = 300
+  - name: Install juntek_monitor systemd service
     ansible.builtin.copy:
-      dest: /etc/systemd/system/junctek_monitor.service
+      dest: /etc/systemd/system/juntek_monitor.service
       content: |
         [Unit]
-        Description=Junctek Monitor Service
+        Description=juntek Monitor Service
         After=docker.target
         [Service]
         Type=simple
-        ExecStart=/root/.local/bin/BTjuntek --quiet
+        ExecStart=/root/.local/bin/juntek_monitor
+        Restart=on-failure
         [Install]
         WantedBy=multi-user.target
-  - name: Install junctek_monitor systemd timer
-    ansible.builtin.copy:
-      dest: /etc/systemd/system/junctek_monitor.timer
-      content: |
-        [Unit]
-        Description=Junctek Monitor Timer
-        After=docker.target
-        [Timer]
-        Unit=junctek_monitor.service
-        OnCalendar=*-*-* *:*:00
-        [Install]
-        WantedBy=multi-user.target
-  - name: Reload systemd
+  - name: Start juntek_monitor
     ansible.builtin.systemd_service:
-      name: junctek_monitor.timer
+      name: juntek_monitor.service
       enabled: true
       state: started
       daemon_reload: yes
