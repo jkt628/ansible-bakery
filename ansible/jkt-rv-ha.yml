@@ -3,113 +3,119 @@
   hosts: rv_ha
   become: true
   tasks:
-  - name: Include vars
-    ansible.builtin.include_vars:
-      dir: vars
-  - name: Get installed packages
-    ansible.builtin.package_facts:
+    - name: Include vars
+      ansible.builtin.include_vars:
+        dir: vars
+    - name: Get installed packages
+      ansible.builtin.package_facts:
 
-  # switch mDNS from avahi to systemd-resolved
-  - name: Remove avahi
-    ansible.builtin.package:
-      name: "{{ item }}"
-      state: absent
-    with_items: "{{ avahi_packages }}"
-    when: item in ansible_facts.packages
-  - name: Create /etc/systemd/resolved.conf.d
-    ansible.builtin.file:
-      path: /etc/systemd/resolved.conf.d
-      state: directory
+    # switch mDNS from avahi to systemd-resolved
+    - name: Remove avahi
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ avahi_packages }}"
+      when: item in ansible_facts.packages
+    - name: Create /etc/systemd/resolved.conf.d
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
         mode: u=rwx,go=rx
-  - name: Enable systemd-resolved DNS Stub
-    ansible.builtin.copy:
-      dest: /etc/systemd/resolved.conf.d/stub.conf
+    - name: Enable systemd-resolved DNS Stub
+      ansible.builtin.copy:
+        dest: /etc/systemd/resolved.conf.d/stub.conf
         mode: u=rw,go=r
-      content: |
-        [Resolve]
-        DNSStubListener=yes
-  - name: Restart systemd-resolved
-    ansible.builtin.systemd:
-      name: systemd-resolved
-      state: restarted
-  - name: Switch NetworkManager to systemd-resolved
-    ansible.builtin.copy:
-      dest: /etc/NetworkManager/conf.d/dns.conf
+        content: |
+          [Resolve]
+          DNSStubListener=yes
+    - name: Restart systemd-resolved
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: restarted
+    - name: Switch NetworkManager to systemd-resolved
+      ansible.builtin.copy:
+        dest: /etc/NetworkManager/conf.d/dns.conf
         mode: u=rw,go=r
-      content: |
-        [main]
-        dns=systemd-resolved
-  - name: Switch resolv.conf to systemd-resolved
-    ansible.builtin.file:
-      path: /etc/resolv.conf
-      state: link
-      src: /usr/lib/systemd/resolv.conf
-      force: true
-  - name: Restart NetworkManager
-    ansible.builtin.systemd:
-      name: NetworkManager
-      state: restarted
+        content: |
+          [main]
+          dns=systemd-resolved
+    - name: Switch resolv.conf to systemd-resolved
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: link
+        src: /usr/lib/systemd/resolv.conf
+        force: true
+    - name: Restart NetworkManager
+      ansible.builtin.systemd:
+        name: NetworkManager
+        state: restarted
 
-  # install juntek_monitor
-  - name: Install pipx
-    ansible.builtin.package:
-      name: "{{ item }}"
-    with_items:
-    - pipx
-    - git
-    when: item not in ansible_facts.packages
-  - name: Install missing packages
-    ansible.builtin.package:
-      name: "{{ item }}"
-    with_items: "{{ juntek_monitor_packages }}"
-    when: item not in ansible_facts.packages
-  - name: Install juntek_monitor
-    community.general.pipx:
-      name: juntek_monitor
-      source: git+https://github.com/jkt628/juntek_monitor.git@reimagined
-      system_site_packages: true
-  - name: Create config dir for juntek_monitor
-    ansible.builtin.file:
-      path: /root/.config/juntek_monitor
-      state: directory
-      recurse: true
-  - name: Configure juntek_monitor
-    ansible.builtin.copy:
-      dest: /root/.config/juntek_monitor/config.ini
+    # install juntek_monitor
+    - name: Install pipx
+      ansible.builtin.package:
+        name: "{{ item }}"
+      with_items:
+        - pipx
+        - git
+      when: item not in ansible_facts.packages
+    - name: Install missing packages
+      ansible.builtin.package:
+        name: "{{ item }}"
+      with_items: "{{ juntek_monitor_packages }}"
+      when: item not in ansible_facts.packages
+    - name: Install juntek_monitor
+      community.general.pipx:
+        name: juntek_monitor
+        source: git+https://github.com/jkt628/juntek_monitor.git@reimagined
+        system_site_packages: true
+    - name: Check juntek_monitor config file
+      ansible.builtin.stat:
+        path: /root/.config/juntek_monitor/config.ini
+      register: junktek_monitor_config
+    - name: Create config dir for juntek_monitor
+      ansible.builtin.file:
+        path: /root/.config/juntek_monitor
+        state: directory
+        recurse: true
+      when: junktek_monitor_config.stat.exists is false
+    - name: Configure juntek_monitor
+      ansible.builtin.copy:
+        dest: /root/.config/juntek_monitor/config.ini
         mode: u=rw,go=r
-      content: |
-        # MQTT Server Info
-        mqtt_broker = 'localhost'
-        mqtt_username = "{{ lookup('ansible.builtin.env', 'USERNAME', default=Undefined) }}"
-        mqtt_password = "{{ lookup('ansible.builtin.env', 'PASSWORD', default=Undefined) }}"
-        # Mac Address of the Juntec BT
-        juntek_addr = "38:3B:26:2E:B8:EE"
-        # Battery Bank Capacity in Ah
-        battery_capacity = 300
-  - name: Install juntek_monitor systemd service
-    ansible.builtin.copy:
-      dest: /etc/systemd/system/juntek_monitor.service
+        content: |
+          # MQTT Server Info
+          mqtt_broker = 'localhost'
+          mqtt_username = "{{ lookup('ansible.builtin.env', 'USERNAME', default=Undefined) }}"
+          mqtt_password = "{{ lookup('ansible.builtin.env', 'PASSWORD', default=Undefined) }}"
+          # Mac Address of the Juntec BT
+          juntek_addr = "38:3B:26:2E:B8:EE"
+          # Battery Bank Capacity in Ah
+          battery_capacity = 300
+      when: junktek_monitor_config.stat.exists is false
+    - name: Install juntek_monitor systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/juntek_monitor.service
         mode: u=rw,go=r
-      content: |
-        [Unit]
-        Description=juntek Monitor Service
-        After=docker.target
-        [Service]
-        Type=simple
-        ExecStart=/root/.local/bin/juntek_monitor
-        Restart=on-failure
-        [Install]
-        WantedBy=multi-user.target
-  - name: Start juntek_monitor
-    ansible.builtin.systemd_service:
-      name: juntek_monitor.service
-      enabled: true
-      state: started
+        content: |
+          [Unit]
+          Description=juntek Monitor Service
+          After=docker.target
+          [Service]
+          Type=simple
+          ExecStart=/root/.local/bin/juntek_monitor
+          Restart=on-failure
+          [Install]
+          WantedBy=multi-user.target
+    - name: Start juntek_monitor
+      ansible.builtin.systemd_service:
+        name: juntek_monitor.service
+        enabled: true
+        state: started
         daemon_reload: true
-      no_block: true
+        no_block: true
 
-  - name: Install remote desktop
-    ansible.builtin.package:
-      name: "{{ item }}"
-    with_items: "{{ remote_desktop_packages }}"
-    when: item not in ansible_facts.packages
+    - name: Install remote desktop
+      ansible.builtin.package:
+        name: "{{ item }}"
+      with_items: "{{ remote_desktop_packages }}"
+      when: item not in ansible_facts.packages
