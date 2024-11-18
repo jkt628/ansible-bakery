@@ -1,0 +1,7 @@
+---
+- name: Configure %sudo
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/%sudo
+    mode: ug=r
+    content: |
+      %sudo ALL=(ALL) NOPASSWD: ALL
