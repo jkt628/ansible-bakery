@@ -1,4 +1,5 @@
-- name: install juntek_monitor
+# -*- mode: ansible -*-
+- name: Install juntek_monitor
   hosts: rv_ha
   become: true
   tasks:
@@ -19,9 +20,11 @@
     ansible.builtin.file:
       path: /etc/systemd/resolved.conf.d
       state: directory
+        mode: u=rwx,go=rx
   - name: Enable systemd-resolved DNS Stub
     ansible.builtin.copy:
       dest: /etc/systemd/resolved.conf.d/stub.conf
+        mode: u=rw,go=r
       content: |
         [Resolve]
         DNSStubListener=yes
@@ -32,6 +35,7 @@
   - name: Switch NetworkManager to systemd-resolved
     ansible.builtin.copy:
       dest: /etc/NetworkManager/conf.d/dns.conf
+        mode: u=rw,go=r
       content: |
         [main]
         dns=systemd-resolved
@@ -72,6 +76,7 @@
   - name: Configure juntek_monitor
     ansible.builtin.copy:
       dest: /root/.config/juntek_monitor/config.ini
+        mode: u=rw,go=r
       content: |
         # MQTT Server Info
         mqtt_broker = 'localhost'
@@ -84,6 +89,7 @@
   - name: Install juntek_monitor systemd service
     ansible.builtin.copy:
       dest: /etc/systemd/system/juntek_monitor.service
+        mode: u=rw,go=r
       content: |
         [Unit]
         Description=juntek Monitor Service
@@ -99,7 +105,7 @@
       name: juntek_monitor.service
       enabled: true
       state: started
-      daemon_reload: yes
+        daemon_reload: true
       no_block: true
 
   - name: Install remote desktop
