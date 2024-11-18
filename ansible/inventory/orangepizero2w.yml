@@ -8,3 +8,5 @@ rv_ha:
       ansible_user: jkt
     jkt-rv:
       ansible_user: jkt
+    uefi-x86.local:
+      ansible_user: jkt
