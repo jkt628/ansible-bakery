@@ -1,0 +1,16 @@
+all:
+  vars:
+    ansible_user: jkt
+  children:
+    bare:
+      hosts:
+        orangepizero2w:
+        radxa-zero3:
+    rv_ha:
+      hosts:
+        jkt-rv-ha:
+        jkt-rv:
+        uefi-x86.local:
+    play:
+      hosts:
+        tiny:

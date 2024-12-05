@@ -1,0 +1,56 @@
+# -*- mode: ansible -*-
+---
+# switch mDNS from avahi to systemd-resolved
+- name: Install systemd-resolved
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - systemd-resolved
+  when: item not in ansible_facts.packages
+- name: Remove avahi
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ avahi_packages }}"
+  when: item in ansible_facts.packages
+- name: Create /etc/systemd/resolved.conf.d
+  ansible.builtin.file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    mode: u=rwx,go=rx
+- name: Enable systemd-resolved DNS Stub
+  ansible.builtin.copy:
+    dest: /etc/systemd/resolved.conf.d/stub.conf
+    mode: u=rw,go=r
+    content: |
+      [Resolve]
+      DNSStubListener=yes
+- name: Restart systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+- name: Switch NetworkManager to systemd-resolved
+  ansible.builtin.copy:
+    dest: /etc/NetworkManager/conf.d/dns.conf
+    mode: u=rw,go=r
+    content: |
+      [main]
+      dns=systemd-resolved
+- name: Enable mDNS on network connections
+  ansible.builtin.shell: |
+    set -o pipefail
+    nmcli -t -f UUID,TYPE c | awk -F: '/802-/{system("nmcli c modify " $1 " connection.mdns yes")}'
+  args:
+    executable: /bin/bash
+  register: mdns
+  changed_when: mdns.rc == 0
+- name: Switch resolv.conf to systemd-resolved
+  ansible.builtin.file:
+    path: /etc/resolv.conf
+    state: link
+    src: /usr/lib/systemd/resolv.conf
+    force: true
+- name: Restart NetworkManager
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: restarted

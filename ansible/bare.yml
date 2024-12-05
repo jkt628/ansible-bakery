@@ -1,5 +1,5 @@
 # -*- mode: ansible -*-
-- name: Rename from orangepizero2w to jkt-rv-ha
+- name: Rename from orangepizero2w or radxa-zero3 to jkt-rv-ha
   hosts: bare
   become: true
   tasks:
@@ -10,11 +10,13 @@
     - name: Set hosts
       ansible.builtin.replace:
         path: /etc/hosts
-        regexp: orangepizero2w
+        regexp: orangepizero2w|radxa-zero3
         replace: jkt-rv-ha
     - include_tasks: tasks/%sudo.yml # noqa: fqcn[action-core] name[missing]
-- name: Rename from orangepizero2w to jkt-rv-ha
-  hosts: orangepizero2w
+- name: Rename from orangepizero2w or radxa-zero3 to jkt-rv-ha
+  hosts:
+    - orangepizero2w
+    - radxa-zero3
   become: true
   tasks:
     - name: Reboot

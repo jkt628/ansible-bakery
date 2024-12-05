@@ -1,3 +1,4 @@
+# -*- mode: ansible -*-
 ---
 - name: Configure %sudo
   ansible.builtin.copy:

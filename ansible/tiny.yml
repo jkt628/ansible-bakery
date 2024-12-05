@@ -1,10 +1,15 @@
 # -*- mode: ansible -*-
 - name: Install juntek_monitor
-  hosts: rv_ha
+  hosts: tiny
   become: true
   tasks:
-    - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/mDNS_by_systemd.yml # noqa: fqcn[action-core] name[missing]
+    - name: Install mosquitto
+      ansible.builtin.package:
+        name: "{{ item }}"
+      with_items:
+        - mosquitto
+        - mosquitto-clients
+      when: item not in ansible_facts.packages
     - include_tasks: tasks/install_juntek_monitor.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/install_remote_desktop.yml # noqa: fqcn[action-core] name[missing]

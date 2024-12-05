@@ -1,0 +1,9 @@
+# -*- mode: ansible -*-
+---
+- name: Install pipx
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - pipx
+    - git
+  when: item not in ansible_facts.packages
