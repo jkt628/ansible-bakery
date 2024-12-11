@@ -1,0 +1,18 @@
+# -*- mode: ansible -*-
+---
+- name: Establish autologin path
+  ansible.builtin.set_fact:
+    autologin_path: "/etc/sddm.conf.d/autologin.conf"
+- name: Ensure configuration directory
+  ansible.builtin.file:
+    path: "{{ autologin_path | dirname }}"
+    state: directory
+    mode: u=rwx,go=rx
+- name: Enable autologin by sddm
+  ansible.builtin.copy:
+    dest: "{{ autologin_path }}"
+    mode: u=rw,go=r
+    content: |
+      [Autologin]
+      User={{ ansible_user }}
+      Session={{ desktop | default('plasma') }}

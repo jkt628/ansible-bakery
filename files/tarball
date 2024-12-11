@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# create tarballs for distribution by ansible.builtin.unarchive
+[ $# -ge 1 ] || set -- barrier kiosk
+
+tarball() {
+	find . -iname "*$1*" ! -name \*.tar.gz -print0 | tar --create --verbose --gzip --file "$1".tar.gz --null --files-from -
+}
+
+for f in "$@"; do
+	echo -e "\n$f:"
+	tarball "$f"
+done

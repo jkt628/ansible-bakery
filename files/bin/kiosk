@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# disable screen blanking
+xset s noblank
+xset s off
+xset -dpms
+
+# hide the mouse cursor
+unclutter -idle 0.5 -root &
+
+# disable chromium warnings and start in full screen mode
+sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/"$USER"/.config/chromium/Default/Preferences
+(chromium --noerrdialogs --disable-infobars --start-fullscreen http://localhost:8123/ &)

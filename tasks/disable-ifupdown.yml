@@ -1,0 +1,10 @@
+# -*- mode: ansible -*-
+---
+- name: Check interfaces
+  ansible.builtin.stat:
+    path: /etc/network/interfaces
+  register: interfaces
+- name: Disable ifupdown
+  ansible.builtin.command: mv -f /etc/network/interfaces /etc/network/interfaces.disabled
+  when: interfaces.stat.exists is true
+  changed_when: interfaces.stat.exists is true

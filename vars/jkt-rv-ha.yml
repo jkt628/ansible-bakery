@@ -8,7 +8,6 @@ avahi_packages:
 - avahi-daemon
 - libavahi-core7
 - libavahi-glib1
-- libavahi-compat-libdnssd1
 remote_desktop_packages:
 - chromium
 - lxde

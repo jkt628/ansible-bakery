@@ -1,0 +1,14 @@
+# -*- mode: ansible -*-
+---
+- name: Install NetworkManager
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - network-manager
+  when: item not in ansible_facts.packages
+- name: Install nm-tray
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - nm-tray
+  when: '"lxqt" in ansible_facts.packages'

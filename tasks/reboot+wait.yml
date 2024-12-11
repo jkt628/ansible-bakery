@@ -1,0 +1,13 @@
+# -*- mode: ansible -*-
+---
+- name: Reboot if requested by package manager
+  ansible.builtin.command:
+    cmd: reboot
+    removes: /var/run/reboot-required
+  async: 300
+  poll: 0
+  ignore_errors: true # noqa: ignore-errors
+- name: Wait for reboot
+  ansible.builtin.wait_for_connection:
+    delay: 30
+    timeout: 300

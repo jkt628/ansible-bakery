@@ -1,0 +1,14 @@
+# -*- mode: ansible -*-
+---
+- name: Remove interfaces
+  ansible.builtin.command: rm -f /etc/network/interfaces*
+  changed_when: false
+- name: Remove ifupdown
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - ifupdown
+    - ethtool
+    - connman
+  when: item in ansible_facts.packages

@@ -1,0 +1,44 @@
+# -*- mode: ansible -*-
+---
+- include_tasks: tasks/remove_ifupdown.yml # noqa: fqcn[action-core] name[missing]
+- include_tasks: tasks/install_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
+- name: Install HA prerequisites
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items: "{{ home_assistant_supervised_packages }}"
+  when: item not in ansible_facts.packages
+- include_tasks: tasks/docker-ce.yml # noqa: fqcn[action-core] name[missing]
+- name: Determine os-agent release
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL curl -s https://api.github.com/repos/home-assistant/os-agent/releases/latest | jq -r .tag_name
+  args:
+    executable: /bin/bash
+  register: result
+  changed_when: result.rc == 0
+- name: Set latest os-agent version
+  ansible.builtin.set_fact:
+    latest_os_agent: "{{ result.stdout.strip() }}"
+- name: Install home-assistant os-agent
+  ansible.builtin.apt:
+    deb: |
+      https://github.com/home-assistant/os-agent/releases/download/{{ latest_os_agent }}/os-agent_{{ latest_os_agent }}_linux_{{ ansible_architecture }}.deb
+  when: ansible_facts.packages['os-agent'] is not defined or ansible_facts.packages['os-agent'][0].version is version(latest_os_agent, '<')
+- name: Determine supervised-installer release
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL curl -s https://api.github.com/repos/home-assistant/supervised-installer/releases/latest | jq -r .tag_name
+  args:
+    executable: /bin/bash
+  register: result
+  changed_when: result.rc == 0
+- name: Set latest supervised-installer version
+  ansible.builtin.set_fact:
+    latest_supervised_installer: "{{ result.stdout.strip() }}"
+- name: Install supervised-installer
+  ansible.builtin.apt:
+    deb: |
+      https://github.com/home-assistant/supervised-installer/releases/latest/download/homeassistant-supervised.deb
+  environment:
+    MACHINE: "{{ homeassistant_machine }}"
+  when: ansible_facts.packages['homeassistant-supervised'] is not defined or ansible_facts.packages['homeassistant-supervised'][0].version is version(latest_supervised_installer, '<') # noqa: yaml[line-length]

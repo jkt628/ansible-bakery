@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Kiosk
+Comment=Start Chromium in Kiosk mode
+Exec=/home/jkt/bin/kiosk
+Icon=chromium-browser
+Terminal=false
+Categories=Utility;Automation;
+Keywords=chromium;kiosk;

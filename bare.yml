@@ -13,7 +13,7 @@
         regexp: orangepizero2w|radxa-zero3
         replace: jkt-rv-ha
     - include_tasks: tasks/%sudo.yml # noqa: fqcn[action-core] name[missing]
-- name: Rename from orangepizero2w or radxa-zero3 to jkt-rv-ha
+- name: Reboot orangepizero2w or radxa-zero3
   hosts:
     - orangepizero2w
     - radxa-zero3

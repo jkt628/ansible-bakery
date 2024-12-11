@@ -1,0 +1,4 @@
+backports_packages:
+  - linux-image-amd64
+  - linux-headers-amd64
+  - firmware-realtek

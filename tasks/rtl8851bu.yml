@@ -1,0 +1,30 @@
+# -*- mode: ansible -*-
+---
+- name: Install dkms and git
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - dkms
+    - git
+  when: item not in ansible_facts.packages
+- name: Check if RTL8851bu is already installed
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      dkms status -m rtl8851bu | grep -q 'installed'
+    executable: /bin/bash
+  register: rtl8851bu
+  failed_when: rtl8851bu.rc == 2
+  changed_when: false
+- name: Clone biglinux/RTL8851bu
+  ansible.builtin.git:
+    repo: https://github.com/biglinux/RTL8851bu.git
+    dest: /tmp/RTL8851bu
+    version: main
+  when: rtl8851bu.rc != 0
+- name: Install rtl8851bu
+  ansible.builtin.command:
+    chdir: /tmp/RTL8851bu
+    cmd: dkms install .
+  when: rtl8851bu.rc != 0
+  changed_when: true

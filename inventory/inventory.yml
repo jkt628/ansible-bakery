@@ -6,6 +6,10 @@ all:
       hosts:
         orangepizero2w:
         radxa-zero3:
+    ha:
+      hosts:
+        home-assistant:
+          desktop: lxqt
     rv_ha:
       hosts:
         jkt-rv-ha:

@@ -5,3 +5,10 @@
     dir: ../vars
 - name: Get installed packages
   ansible.builtin.package_facts:
+- name: Fetch deb architecture
+  ansible.builtin.command: dpkg --print-architecture
+  register: deb_arch
+  changed_when: false
+- name: Establish deb_architecture
+  ansible.builtin.set_fact:
+    deb_architecture: "{{ deb_arch.stdout.strip() }}"

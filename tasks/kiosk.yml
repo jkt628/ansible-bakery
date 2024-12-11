@@ -1,0 +1,15 @@
+# -*- mode: ansible -*-
+---
+- name: Install kiosk
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - chromium
+    - unclutter
+  when: item not in ansible_facts.packages
+- name: Configure kiosk
+  ansible.builtin.unarchive:
+    src: files/kiosk.tar.gz
+    dest: "/home/{{ ansible_user }}"
+    owner: "{{ ansible_user }}"
+    creates: "/home/{{ ansible_user }}/.config/autostart/kiosk.desktop"

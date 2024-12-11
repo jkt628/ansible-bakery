@@ -1,4 +1,5 @@
 collections/
+files/*.gz
 **/*secrets*
 
 # Byte-compiled / optimized / DLL files

@@ -1,0 +1,14 @@
+# -*- mode: ansible -*-
+---
+- name: Install barrier
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - barrier
+  when: item not in ansible_facts.packages
+- name: Configure barrier
+  ansible.builtin.unarchive:
+    src: files/barrier.tar.gz
+    dest: "/home/{{ ansible_user }}"
+    owner: "{{ ansible_user }}"
+    creates: "/home/{{ ansible_user }}/.config/autostart/barrier.desktop"

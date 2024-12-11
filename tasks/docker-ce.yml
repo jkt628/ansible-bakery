@@ -1,0 +1,22 @@
+# -*- mode: ansible -*-
+---
+- name: Install curl
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - curl
+  when: item not in ansible_facts.packages
+- name: Install docker-ce
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL get.docker.com | sh
+  args:
+    executable: /bin/bash
+  register: docker_install
+  changed_when: docker_install.stdout.find('already installed') == -1
+  when: "'docker-ce' not in ansible_facts.packages"
+- name: Add user to docker group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
