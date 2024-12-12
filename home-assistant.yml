@@ -13,6 +13,6 @@
     - include_tasks: tasks/install_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/mDNS_by_systemd.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/hotspot.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/home-assistant-supervised.yml # noqa: fqcn[action-core] name[missing]
+### - include_tasks: tasks/home-assistant-supervised.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/barrier.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/kiosk.yml # noqa: fqcn[action-core] name[missing]
