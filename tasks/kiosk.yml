@@ -1,5 +1,12 @@
 # -*- mode: ansible -*-
 ---
+- name: Remove xscreensaver
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - xscreensaver
+  when: item in ansible_facts.packages
 - name: Install kiosk
   ansible.builtin.package:
     name: "{{ item }}"
