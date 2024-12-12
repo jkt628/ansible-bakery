@@ -1,0 +1,14 @@
+# -*- mode: ansible -*-
+---
+- name: Configure magic-sysrq
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-magic-sysrq.conf
+    mode: u=rw,go=
+    content: |
+      kernel.sysrq = 438
+  register: magic_sysrq
+- name: Reload sysctl
+  ansible.builtin.systemd:
+    name: systemd-sysctl
+    state: restarted
+  when: magic_sysrq.changed # noqa: no-handler
