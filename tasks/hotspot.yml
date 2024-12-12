@@ -1,0 +1,18 @@
+# -*- mode: ansible -*-
+---
+- name: Configure hotspot
+  community.general.nmcli:
+    type: wifi
+    ifname: "{{ wifi_interface }}"
+    conn_name: jkt-outdoor
+    ssid: jkt-outdoor
+    state: present
+    method4: shared
+    method6: shared
+    wifi:
+      mode: ap
+      band: bg
+      channel: 5
+    wifi_sec:
+      key-mgmt: wpa-psk
+      psk: "{{ jkt_outdoor_password }}"
