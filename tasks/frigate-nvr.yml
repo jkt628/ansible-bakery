@@ -1,0 +1,34 @@
+# -*- mode: ansible -*-
+# run frigate-nvr like the home-assistant addon
+---
+- name: Ensure config directory
+  ansible.builtin.file:
+    path: "/usr/share/hassio/homeassistant"
+    state: directory
+    mode: u=rwx,go=rx
+- name: Ensure media directory
+  ansible.builtin.file:
+    path: "/usr/share/hassio/media"
+    state: directory
+    mode: u=rwx,go=rx
+- name: Install frigate configuration
+  ansible.builtin.copy:
+    dest: "/usr/share/hassio/homeassistant/frigate.yaml"
+    src: files/usr/share/hassio/homeassistant/frigate.yaml
+    mode: u=rw,go=r
+- name: Ensure frigate-nvr directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/frigate-nvr"
+    state: directory
+    mode: u=rwx,go=rx
+- name: Install frigate-nvr docker-compose
+  ansible.builtin.copy:
+    dest: "/home/{{ ansible_user }}/frigate-nvr/docker-compose.yml"
+    src: files/frigate-nvr/docker-compose.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: u=rw,go=r
+- name: Start frigate-nvr
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ ansible_user }}/frigate-nvr"
+    pull: missing

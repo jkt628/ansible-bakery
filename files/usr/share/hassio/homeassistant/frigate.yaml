@@ -1,0 +1,60 @@
+mqtt:
+  enabled: false
+
+cameras:
+  front:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:nMVDowNhQRgxk5Iauu3wie3ugzVVMsx6@192.150.23.25:554/stream2
+          roles:
+            - detect
+        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:nMVDowNhQRgxk5Iauu3wie3ugzVVMsx6@192.150.23.25:554/stream1
+          roles:
+            - record
+    detect:
+      enabled: true
+      width: 1280
+      height: 720
+  driveway:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:aYrOcmWduLHpnt3HEwI4RUyE4OrzOGoG@192.150.23.27:554/stream2
+          roles:
+            - detect
+        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:aYrOcmWduLHpnt3HEwI4RUyE4OrzOGoG@192.150.23.27:554/stream1
+          roles:
+            - record
+    detect:
+      enabled: true
+      width: 1280
+      height: 720
+  back:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:wD0xbYPCPwKwpBBaTo77HjoOVTqrgQTh@192.150.23.26:554/stream2
+          roles:
+            - detect
+        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:wD0xbYPCPwKwpBBaTo77HjoOVTqrgQTh@192.150.23.26:554/stream1
+          roles:
+            - record
+    detect:
+      enabled: true
+      width: 1280
+      height: 720
+detectors:
+  coral:
+    type: edgetpu
+    device: pci
+record:
+  enabled: True
+  retain:
+    days: 14
+    mode: all
+  events:
+    retain:
+      default: 60
+      mode: motion
+version: 0.14
