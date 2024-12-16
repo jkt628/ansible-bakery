@@ -1,5 +1,8 @@
 mqtt:
-  enabled: false
+  enabled: true
+  host: core-mosquitto
+  user: "{{ mosquitto_user}}"
+  password: "{{ mosquitto_password}}"
 
 cameras:
   front:
@@ -48,6 +51,9 @@ detectors:
   coral:
     type: edgetpu
     device: pci
+objects:
+  track:
+    - person
 record:
   enabled: True
   retain:

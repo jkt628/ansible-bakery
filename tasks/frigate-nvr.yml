@@ -12,10 +12,11 @@
     state: directory
     mode: u=rwx,go=rx
 - name: Install frigate configuration
-  ansible.builtin.copy:
+  ansible.builtin.template:
     dest: "/usr/share/hassio/homeassistant/frigate.yaml"
     src: files/usr/share/hassio/homeassistant/frigate.yaml
     mode: u=rw,go=r
+  register: frigate_config
 - name: Ensure frigate-nvr directory
   ansible.builtin.file:
     path: "/home/{{ ansible_user }}/frigate-nvr"
@@ -32,3 +33,4 @@
   community.docker.docker_compose_v2:
     project_src: "/home/{{ ansible_user }}/frigate-nvr"
     pull: missing
+    state: '{{ "present" if frigate_config.changed else "restarted" }}'
