@@ -1,9 +1,14 @@
 # -*- mode: ansible -*-
 ---
-- name: Reboot if requested by package manager
+- name: Check if reboot is requested
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: reboot_required
+- name: Reboot if requested
   ansible.builtin.command:
     cmd: reboot
     removes: /var/run/reboot-required
+  when: reboot_required.stat.exists is true
   async: 300
   poll: 0
   ignore_errors: true # noqa: ignore-errors
@@ -11,3 +16,4 @@
   ansible.builtin.wait_for_connection:
     delay: 30
     timeout: 300
+  when: reboot_required.stat.exists is true

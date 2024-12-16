@@ -28,3 +28,11 @@
     cmd: dkms install .
   when: rtl8851bu.rc != 0
   changed_when: true
+- name: Request reboot
+  ansible.builtin.file:
+    path: /var/run/reboot-required
+    mode: u=r,go=
+    state: touch
+  when: rtl8851bu.rc != 0
+- include_tasks: tasks/reboot+wait.yml # noqa: fqcn[action-core] name[missing]
+  when: rtl8851bu.rc != 0
