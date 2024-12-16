@@ -8,6 +8,7 @@
     - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/rtl8851bu.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/coral-pcie.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/%sudo.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/autologin.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/remove_ifupdown.yml # noqa: fqcn[action-core] name[missing]
@@ -17,3 +18,4 @@
     - include_tasks: tasks/home-assistant-supervised.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/barrier.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/kiosk.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/reboot+wait.yml # noqa: fqcn[action-core] name[missing]

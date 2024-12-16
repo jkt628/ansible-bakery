@@ -1,0 +1,52 @@
+# -*- mode: ansible -*-
+---
+- name: Install edgetpu packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - devscripts
+    - dkms
+    - git
+    - libedgetpu1-std
+  when: item not in ansible_facts.packages
+- name: Check if gasket is already installed
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      dkms status -m gasket | grep -q 'installed'
+    executable: /bin/bash
+  register: gasket
+  failed_when: gasket.rc == 2
+  changed_when: false
+- name: Clone google/gasket
+  ansible.builtin.git:
+    repo: https://github.com/google/gasket-driver.git
+    dest: /tmp/gasket-driver
+    version: main
+  when: gasket.rc != 0
+- name: Build gasket deb
+  ansible.builtin.command:
+    chdir: /tmp/gasket-driver
+    cmd: debuild -us -uc -tc -b
+  when: gasket.rc != 0
+  changed_when: true
+  register: gasket_driver
+- name: Install gasket deb
+  ansible.builtin.apt:
+    deb: "/tmp{{ gasket_driver.stdout | regex_search('/gasket-dkms_[-.0-9]+_all.deb') }}"
+  when: gasket.rc != 0
+- name: Reboot later
+  ansible.builtin.file:
+    path: /var/run/reboot-required
+    mode: u=r,go=
+    state: touch
+  when: gasket.rc != 0
+- name: Add group apex
+  ansible.builtin.group:
+    name: apex
+    system: true
+- name: Add user to apex group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: apex
+    append: true
