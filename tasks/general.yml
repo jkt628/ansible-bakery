@@ -1,0 +1,17 @@
+# -*- mode: ansible -*-
+---
+- name: Install utilities
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - rsync
+    - systemd-timesyncd
+  when: 'item not in ansible_facts.packages and "chrony" not in ansible_facts.packages'
+- name: Install aliases
+  ansible.builtin.copy:
+    src: files/.bash_aliases
+    dest: "/home/{{ ansible_user }}/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: u=rw,go=r
+    force: false
