@@ -1,0 +1,8 @@
+# -*- mode: ansible -*-
+---
+- name: Execute a task named by a variable
+  hosts: all
+  become: true
+  tasks:
+    - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: "{{ task }}" # noqa: fqcn[action-core] name[missing]
