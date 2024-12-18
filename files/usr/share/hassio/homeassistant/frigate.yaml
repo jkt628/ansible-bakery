@@ -1,52 +1,61 @@
 mqtt:
   enabled: true
   host: core-mosquitto
-  user: "{{ mosquitto_user}}"
-  password: "{{ mosquitto_password}}"
+  user: "{{ ansible_user }}"
+  password: "{{ ansible_become_pass }}"
+
+go2rtc:
+  streams:
+    front:
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:nMVDowNhQRgxk5Iauu3wie3ugzVVMsx6@192.150.23.25:554/stream1
+      - ffmpeg:front
+    driveway:
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:aYrOcmWduLHpnt3HEwI4RUyE4OrzOGoG@192.150.23.27:554/stream1
+      - ffmpeg:driveway
+    back:
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:wD0xbYPCPwKwpBBaTo77HjoOVTqrgQTh@192.150.23.26:554/stream1
+      - ffmpeg:back
 
 cameras:
   front:
     enabled: true
     ffmpeg:
       inputs:
-        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:nMVDowNhQRgxk5Iauu3wie3ugzVVMsx6@192.150.23.25:554/stream2
+        - path: "rtsp://127.0.0.1:8554/front"
+          input_args: preset-rtsp-restream
           roles:
             - detect
-        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:nMVDowNhQRgxk5Iauu3wie3ugzVVMsx6@192.150.23.25:554/stream1
-          roles:
             - record
     detect:
       enabled: true
-      width: 1280
-      height: 720
+      width: 2560
+      height: 1440
   driveway:
     enabled: true
     ffmpeg:
       inputs:
-        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:aYrOcmWduLHpnt3HEwI4RUyE4OrzOGoG@192.150.23.27:554/stream2
+        - path: "rtsp://127.0.0.1:8554/driveway"
+          input_args: preset-rtsp-restream
           roles:
             - detect
-        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:aYrOcmWduLHpnt3HEwI4RUyE4OrzOGoG@192.150.23.27:554/stream1
-          roles:
             - record
     detect:
       enabled: true
-      width: 1280
-      height: 720
+      width: 2560
+      height: 1440
   back:
     enabled: true
     ffmpeg:
       inputs:
-        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:wD0xbYPCPwKwpBBaTo77HjoOVTqrgQTh@192.150.23.26:554/stream2
+        - path: "rtsp://127.0.0.1:8554/back"
+          input_args: preset-rtsp-restream
           roles:
             - detect
-        - path: rtsp://tp-link-tapo@jkth628.fastmail.us:wD0xbYPCPwKwpBBaTo77HjoOVTqrgQTh@192.150.23.26:554/stream1
-          roles:
             - record
     detect:
       enabled: true
-      width: 1280
-      height: 720
+      width: 2560
+      height: 1440
 detectors:
   coral:
     type: edgetpu
