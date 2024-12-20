@@ -7,7 +7,6 @@
     - devscripts
     - dkms
     - git
-    - libedgetpu1-std
   when: item not in ansible_facts.packages
 - name: Check if gasket is already installed
   ansible.builtin.shell:
