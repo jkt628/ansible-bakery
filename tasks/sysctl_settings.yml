@@ -2,5 +2,5 @@
 ---
 - ansible.builtin.include_tasks: tasks/sysctl.yml # noqa: fqcn[action-core] name[missing]
   vars:
-    sysctl_name: magic-sysrq
-    sysctl_value: kernel.sysrq = 438
+    sysctl_name: perf_event_paranoid
+    sysctl_value: kernel.perf_event_paranoid = 2

@@ -1,6 +1,0 @@
-# -*- mode: ansible -*-
----
-- ansible.builtin.include_tasks: tasks/sysrq.yml # noqa: fqcn[action-core] name[missing]
-  vars:
-    sysrq_name: perf_event_paranoid
-    sysrq_value: kernel.perf_event_paranoid = 2

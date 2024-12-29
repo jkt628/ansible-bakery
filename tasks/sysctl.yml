@@ -1,0 +1,13 @@
+# -*- mode: ansible -*-
+---
+- name: Configure sysctl
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-{{ sysctl_name }}.conf
+    mode: u=rw,go=
+    content: "{{ sysctl_value }}"
+  register: sysctl_result
+- name: Reload sysctl
+  ansible.builtin.systemd:
+    name: systemd-sysctl
+    state: restarted
+  when: sysctl_result.changed # noqa: no-handler
