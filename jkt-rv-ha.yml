@@ -5,6 +5,7 @@
   tasks:
     - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/threads-max.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/mDNS_by_systemd.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/install_juntek_monitor.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/install_remote_desktop.yml # noqa: fqcn[action-core] name[missing]

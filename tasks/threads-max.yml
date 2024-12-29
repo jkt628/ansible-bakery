@@ -1,0 +1,7 @@
+# -*- mode: ansible -*-
+---
+- name: Increase ridiculously low threads-max
+  ansible.builtin.include_tasks: tasks/sysctl.yml
+  vars:
+    sysctl_name: threads-max
+    sysctl_value: kernel.threads-max = 32768
