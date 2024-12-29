@@ -1,0 +1,27 @@
+{
+	"words": [
+		"autoconnect",
+		"autologin",
+		"chdir",
+		"debconf",
+		"dkms",
+		"dnsmasq",
+		"edgetpu",
+		"fqcn",
+		"hassio",
+		"homeassistant",
+		"hotspot",
+		"ifname",
+		"mgmt",
+		"mosquitto",
+		"mqtt",
+		"nmcli",
+		"noqa",
+		"orangepizero",
+		"preseed",
+		"preset-rtsp-restream",
+		"radxa",
+		"rtsp",
+		"sysrq"
+	]
+}

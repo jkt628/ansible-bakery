@@ -16,7 +16,7 @@
   register: rtl8851bu
   failed_when: rtl8851bu.rc == 2
   changed_when: false
-- name: Clone biglinux/RTL8851bu
+- name: Clone RTL8851bu
   ansible.builtin.git:
     repo: https://github.com/biglinux/RTL8851bu.git
     dest: /tmp/RTL8851bu
