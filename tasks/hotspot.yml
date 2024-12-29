@@ -1,18 +1,23 @@
 # -*- mode: ansible -*-
 ---
+- name: Prevent damage by home-assistant
+  ansible.builtin.command: ha network update --disabled {{ wifi_interface }}
+  failed_when: false
+  changed_when: false
+  when: '"os-agent" in ansible_facts.packages'
 - name: Configure hotspot
   community.general.nmcli:
     type: wifi
     ifname: "{{ wifi_interface }}"
-    conn_name: jkt-outdoor
-    ssid: jkt-outdoor
+    conn_name: "{{ wifi_ssid }}"
+    ssid: "{{ wifi_ssid }}"
+    autoconnect: "{{ autoconnect | default(true) }}"
     state: present
     method4: shared
-    method6: shared
+    ip4: "{{ ip4 | default('192.168.42.1/24') }}"
     wifi:
       mode: ap
       band: bg
-      channel: 5
     wifi_sec:
       key-mgmt: wpa-psk
-      psk: "{{ jkt_outdoor_password }}"
+      psk: "{{ wifi_password }}"

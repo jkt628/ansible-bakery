@@ -1,0 +1,23 @@
+# -*- mode: ansible -*-
+# Create a systemd drop-in file for a service named by the first setting in the content
+# vars:
+#   service: foo.service
+#   content: |
+#     [Unit]
+#     Description=Foo
+#     After=bar.service
+# creates /etc/systemd/system/foo.service.d/Description.conf
+---
+- name: Create systemd drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/{{ service }}.d
+    state: directory
+    mode: u=rwx,go=rx
+- name: Create systemd drop-in file
+  ansible.builtin.copy:
+    dest: "/etc/systemd/system/{{ service }}.d/{{ content | regex_replace('(?m)^\\[.*\\n|=.*\\n.*', '') }}.conf"
+    mode: u=rw,go=r
+    content: "{{ content }}"
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

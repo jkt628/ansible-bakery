@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+while ! ha network update --disabled "{{ wifi_interface }}"; do
+	sleep 1
+done
+nmcli c up "{{ wifi_ssid }}"
+iptables -P FORWARD ACCEPT
