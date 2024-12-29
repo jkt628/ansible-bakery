@@ -8,31 +8,27 @@
     - git
   when: item not in ansible_facts.packages
 - name: Check if RTL8851bu is already installed
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      dkms status -m rtl8851bu | grep -q 'installed'
-    executable: /bin/bash
+  ansible.builtin.command: dkms status -m rtl8851bu
   register: rtl8851bu
-  failed_when: rtl8851bu.rc == 2
+  failed_when: rtl8851bu.rc != 0
   changed_when: false
 - name: Clone RTL8851bu
   ansible.builtin.git:
     repo: https://github.com/biglinux/RTL8851bu.git
     dest: /tmp/RTL8851bu
     version: main
-  when: rtl8851bu.rc != 0
+  when: '"installed" not in rtl8851bu.stdout'
 - name: Install rtl8851bu
   ansible.builtin.command:
     chdir: /tmp/RTL8851bu
     cmd: dkms install .
-  when: rtl8851bu.rc != 0
+  when: '"installed" not in rtl8851bu.stdout'
   changed_when: true
 - name: Request reboot
   ansible.builtin.file:
     path: /var/run/reboot-required
     mode: u=r,go=
     state: touch
-  when: rtl8851bu.rc != 0
+  when: '"installed" not in rtl8851bu.stdout'
 - include_tasks: tasks/reboot+wait.yml # noqa: fqcn[action-core] name[missing]
-  when: rtl8851bu.rc != 0
+  when: '"installed" not in rtl8851bu.stdout'
