@@ -5,3 +5,4 @@ while ! ha network update --disabled "{{ wifi_interface }}"; do
 done
 nmcli c up "{{ wifi_ssid }}"
 iptables -P FORWARD ACCEPT
+nft -a list ruleset |& sed -n '/oifname "{{ wifi_interface }}" reject/{s/.*#//;p;q}' | xargs nft delete rule "nm-shared-{{ wifi_interface }}" filter_forward

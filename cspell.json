@@ -17,11 +17,13 @@
 		"mqtt",
 		"nmcli",
 		"noqa",
+		"oifname",
 		"orangepizero",
 		"preseed",
 		"preset-rtsp-restream",
 		"radxa",
 		"rtsp",
+		"ruleset",
 		"sysrq"
 	]
 }
