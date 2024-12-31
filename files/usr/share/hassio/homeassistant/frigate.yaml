@@ -10,7 +10,7 @@ go2rtc:
       - rtsp://tp-link-tapo@jkth628.fastmail.us:nMVDowNhQRgxk5Iauu3wie3ugzVVMsx6@192.150.23.25:554/stream1
       - ffmpeg:front
     driveway:
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:aYrOcmWduLHpnt3HEwI4RUyE4OrzOGoG@192.150.23.27:554/stream1
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:aYrOcmWduLHpnt3HEwI4RUyE4OrzOGoG@192.168.42.27:554/stream1
       - ffmpeg:driveway
     back:
       - rtsp://tp-link-tapo@jkth628.fastmail.us:wD0xbYPCPwKwpBBaTo77HjoOVTqrgQTh@192.150.23.26:554/stream1
