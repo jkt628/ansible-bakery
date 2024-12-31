@@ -18,6 +18,7 @@
     - include_tasks: tasks/hotspot-in-spite-of-home-assistant.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/sysctl_settings.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/general.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/frigate-nvr.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/barrier.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/kiosk.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/reboot+wait.yml # noqa: fqcn[action-core] name[missing]

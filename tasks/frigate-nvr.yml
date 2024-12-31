@@ -1,0 +1,8 @@
+# -*- mode: ansible -*-
+# frigate-nvr records cameras and detects motion
+---
+- name: Create supervisor control script
+  ansible.builtin.template:
+    src: files/usr/share/hassio/homeassistant/frigate.yaml
+    dest: /usr/share/hassio/homeassistant/frigate.yaml
+    mode: u=rw,go=
