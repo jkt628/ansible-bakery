@@ -1,17 +1,25 @@
 {
 	"words": [
 		"autoconnect",
+		"autoipd",
 		"autologin",
+		"avahi",
 		"chdir",
+		"configargparse",
 		"debconf",
 		"dkms",
 		"dnsmasq",
 		"edgetpu",
 		"fqcn",
+		"goserver",
 		"hassio",
 		"homeassistant",
 		"hotspot",
 		"ifname",
+		"juntek",
+		"libavahi",
+		"lxde",
+		"mdns",
 		"mgmt",
 		"mosquitto",
 		"mqtt",
@@ -19,11 +27,16 @@
 		"noqa",
 		"oifname",
 		"orangepizero",
+		"paho",
 		"preseed",
 		"preset-rtsp-restream",
 		"radxa",
+		"resolv",
+		"resolvectl",
 		"rtsp",
 		"ruleset",
-		"sysrq"
+		"sysrq",
+		"uefi",
+		"xsession"
 	]
 }
