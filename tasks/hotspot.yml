@@ -4,7 +4,7 @@
   ansible.builtin.command: ha network update --disabled {{ wifi_interface }}
   failed_when: false
   changed_when: false
-  when: '"os-agent" in ansible_facts.packages'
+  when: '"homeassistant-supervised" in ansible_facts.packages'
 - name: Configure hotspot
   community.general.nmcli:
     type: wifi
@@ -18,6 +18,7 @@
     wifi:
       mode: ap
       band: bg
+      channel: 5
     wifi_sec:
       key-mgmt: wpa-psk
       psk: "{{ wifi_password }}"

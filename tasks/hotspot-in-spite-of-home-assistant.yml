@@ -1,13 +1,22 @@
 # -*- mode: ansible -*-
 # home-assistant supervisor controls all network interfaces until beaten into submission
 ---
+- name: Configure dnsmasq for cameras
+  ansible.builtin.copy:
+    dest: /etc/NetworkManager/dnsmasq-shared.d/cameras.conf
+    mode: u=rw,go=r
+    content: |
+      dhcp-host=60:83:e7:c3:3b:dc,front,192.168.42.25,12h
+      dhcp-host=60:83:e7:c3:39:07,back,192.168.42.26,12h
+      dhcp-host=60:83:e7:c3:38:ac,driveway,192.168.42.27,12h
+- name: Allow outbound to hotspot network
+  ansible.builtin.template:
+    src: files/etc/NetworkManager/dispatcher.d/99-wifi-allow
+    dest: /etc/NetworkManager/dispatcher.d/99-wifi-allow
+    mode: u=rwx,go=r
 - include_tasks: tasks/hotspot.yml # noqa: fqcn[action-core] name[missing]
   vars:
     autoconnect: false
-- name: Undo home-assistant damage
-  community.general.nmcli:
-    conn_name: "Supervisor {{ wifi_interface }}"
-    state: absent
 - name: Create supervisor control script
   ansible.builtin.template:
     src: files/usr/sbin/hotspot
@@ -20,11 +29,3 @@
     content: |
       [Service]
       ExecStartPost=/usr/sbin/hotspot
-- name: Configure dnsmasq for cameras
-  ansible.builtin.copy:
-    dest: /etc/NetworkManager/dnsmasq-shared.d/cameras.conf
-    mode: u=rw,go=r
-    content: |
-      dhcp-host=60:83:e7:c3:3b:dc,front,192.168.42.25,12h
-      dhcp-host=60:83:e7:c3:39:07,back,192.168.42.26,12h
-      dhcp-host=60:83:e7:c3:38:ac,driveway,192.168.42.27,12h

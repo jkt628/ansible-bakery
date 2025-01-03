@@ -7,6 +7,7 @@
     content: |
       [main]
       dns=systemd-resolved
+  register: dns
 - name: Enable mDNS on network connections
   ansible.builtin.shell: |
     set -o pipefail
@@ -19,3 +20,4 @@
   ansible.builtin.systemd:
     name: NetworkManager
     state: restarted
+  when: dns.changed # noqa: no-handler

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+INTERFACE="$1"
+EVENT="$2"
+
+[[ "$INTERFACE" == "{{ wifi_interface }}" ]] || exit 0
+
+case "$EVENT" in
+	up)
+		iptables -P FORWARD ACCEPT
+		nft -a list ruleset |& sed -n '/oifname "{{ wifi_interface }}" reject/{s/.*#//;p;q}' | xargs nft delete rule "nm-shared-{{ wifi_interface }}" filter_forward
+		;;
+esac

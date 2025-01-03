@@ -3,6 +3,17 @@
 while ! ha network update --disabled "{{ wifi_interface }}"; do
 	sleep 1
 done
+[[ "$(nmcli c)" =~ "{{ wifi_ssid }}" ]] ||
+nmcli c add con-name "{{ wifi_ssid }}" \
+  type wifi \
+  ifname "{{ wifi_interface }}" \
+  ssid "{{ wifi_ssid }}" \
+  autoconnect off \
+  ipv4.method shared \
+  ipv4.addresses 192.168.42.1/24 \
+  802-11-wireless.mode ap \
+  802-11-wireless.band bg \
+  802-11-wireless.channel 5 \
+  wifi-sec.key-mgmt \
+  wpa-psk wifi-sec.psk "{{ wifi_password }}"
 nmcli c up "{{ wifi_ssid }}"
-iptables -P FORWARD ACCEPT
-nft -a list ruleset |& sed -n '/oifname "{{ wifi_interface }}" reject/{s/.*#//;p;q}' | xargs nft delete rule "nm-shared-{{ wifi_interface }}" filter_forward

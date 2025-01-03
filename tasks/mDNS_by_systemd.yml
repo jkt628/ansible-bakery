@@ -7,17 +7,20 @@
   with_items:
     - systemd-resolved
   when: item not in ansible_facts.packages
+  register: resolved
 - name: Remove avahi
   ansible.builtin.package:
     name: "{{ item }}"
     state: absent
   with_items: "{{ avahi_packages }}"
   when: item in ansible_facts.packages
+  register: avahi
 - name: Create /etc/systemd/resolved.conf.d
   ansible.builtin.file:
     path: /etc/systemd/resolved.conf.d
     state: directory
     mode: u=rwx,go=rx
+  register: resolved_conf
 - name: Enable systemd-resolved DNS Stub
   ansible.builtin.copy:
     dest: /etc/systemd/resolved.conf.d/stub.conf
@@ -25,6 +28,7 @@
     content: |
       [Resolve]
       DNSStubListener=yes
+  register: stub
 - name: Restart systemd-resolved
   ansible.builtin.systemd:
     name: systemd-resolved
@@ -35,7 +39,8 @@
     state: link
     src: /usr/lib/systemd/resolv.conf
     force: true
+  register: resolv_conf
 - include_tasks: tasks/mDNS_by_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
-  when: '"network-manager" in ansible_facts.packages'
+  when: '"network-manager" in ansible_facts.packages and resolved.changed and avahi.changed and resolved_conf.changed and stub.changed and resolv_conf.changed'
 - include_tasks: tasks/mDNS_by_resolvectl.yml # noqa: fqcn[action-core] name[missing]
   when: '"network-manager" not in ansible_facts.packages'

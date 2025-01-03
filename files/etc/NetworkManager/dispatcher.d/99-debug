@@ -1,0 +1,10 @@
+#!/bin/bash
+
+exec >>/tmp/99-debug.log 2>&1
+
+date +"%n%Y-%m-%d %H:%M:%S"
+argv=( "$@" )
+for i in "${!argv[@]}"; do
+	echo "$i: ${argv[$i]}"
+done
+export
