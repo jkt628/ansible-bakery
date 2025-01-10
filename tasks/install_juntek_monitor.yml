@@ -14,27 +14,18 @@
 - name: Check juntek_monitor config file
   ansible.builtin.stat:
     path: /root/.config/juntek_monitor/config.ini
-  register: junktek_monitor_config
+  register: juntek_monitor_config
 - name: Create config dir for juntek_monitor
   ansible.builtin.file:
     path: /root/.config/juntek_monitor
     state: directory
     recurse: true
-  when: junktek_monitor_config.stat.exists is false
+  when: juntek_monitor_config.stat.exists is false
 - name: Configure juntek_monitor
   ansible.builtin.copy:
     dest: /root/.config/juntek_monitor/config.ini
     mode: u=rw,go=r
-    content: |
-      # MQTT Server Info
-      mqtt_broker = 'localhost'
-      mqtt_username = "{{ lookup('ansible.builtin.env', 'USERNAME', default=Undefined) }}"
-      mqtt_password = "{{ lookup('ansible.builtin.env', 'PASSWORD', default=Undefined) }}"
-      # Mac Address of the Juntec BT
-      juntek_addr = "38:3B:26:2E:B8:EE"
-      # Battery Bank Capacity in Ah
-      battery_capacity = 300
-  when: junktek_monitor_config.stat.exists is false
+  when: juntek_monitor_config.stat.exists is false
 - name: Install juntek_monitor systemd service
   ansible.builtin.copy:
     dest: /etc/systemd/system/juntek_monitor.service
