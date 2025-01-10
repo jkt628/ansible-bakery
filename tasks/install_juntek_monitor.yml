@@ -22,7 +22,8 @@
     recurse: true
   when: juntek_monitor_config.stat.exists is false
 - name: Configure juntek_monitor
-  ansible.builtin.copy:
+  ansible.builtin.template:
+    src: files/root/.config/juntek_monitor/config.ini
     dest: /root/.config/juntek_monitor/config.ini
     mode: u=rw,go=r
   when: juntek_monitor_config.stat.exists is false
