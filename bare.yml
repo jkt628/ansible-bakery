@@ -3,6 +3,7 @@
   hosts: bare
   become: true
   tasks:
+    - include_tasks: tasks/threads-max.yml # noqa: fqcn[action-core] name[missing]
     - name: Set hostname
       ansible.builtin.hostname:
         name: jkt-rv-ha
