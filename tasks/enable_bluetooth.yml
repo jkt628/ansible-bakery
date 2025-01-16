@@ -1,0 +1,27 @@
+# -*- mode: ansible -*-
+---
+- name: Install rfkill
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - rfkill
+  when: item not in ansible_facts.packages
+- name: Fix ConfigurationDirectoryMode
+  ansible.builtin.file:
+    path: /etc/bluetooth
+    state: directory
+    mode: ugo=rx
+- name: Enable bluetooth device
+  ansible.builtin.include_tasks: tasks/systemd-drop-in.yml
+  vars:
+    service: bluetooth.service
+    content: |
+      [Service]
+      ExecStartPost=-rfkill unblock bluetooth
+      ExecStartPost=-hciattach -s 1500000 /dev/ttyS1 any 1500000 flow nosleep
+      ExecStartPost=-hciconfig hci0 up
+- name: Restart bluetooth
+  ansible.builtin.systemd:
+    name: bluetooth
+    state: restarted
+  when: systemd_drop_in.changed # noqa: no-handler

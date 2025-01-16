@@ -18,6 +18,8 @@
     dest: "/etc/systemd/system/{{ service }}.d/{{ content | regex_replace('(?m)^\\[.*\\n|=.*\\n.*', '') }}.conf"
     mode: u=rw,go=r
     content: "{{ content }}"
+  register: systemd_drop_in
 - name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: true
+  when: systemd_drop_in.changed # noqa: no-handler
