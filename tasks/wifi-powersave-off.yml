@@ -1,0 +1,23 @@
+# -*- mode: ansible -*-
+---
+- name: Disable WiFi powersave
+  ansible.builtin.copy:
+    dest: /etc/NetworkManager/dispatcher.d/99-wifi-powersave-off
+    mode: u=rwx,go=rx
+    content: |
+      #!/usr/bin/env bash
+      set -e
+
+      INTERFACE="$1"
+      EVENT="$2"
+      wlan='\bwl'
+
+      if [[ "$EVENT" = up && "$INTERFACE" =~ $wlan ]]; then
+        nmcli c mod "$CONNECTION_UUID" wifi.powersave 2
+      fi
+  register: wifi_powersave_off
+- name: Reload NetworkManager
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: restarted
+  when: wifi_powersave_off.changed # noqa: no-handler

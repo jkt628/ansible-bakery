@@ -3,6 +3,7 @@
   hosts: rv_ha
   become: true
   tasks:
+    - include_tasks: tasks/wifi-powersave-off.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/threads-max.yml # noqa: fqcn[action-core] name[missing]

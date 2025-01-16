@@ -32,6 +32,7 @@
 		"orangepizero",
 		"paho",
 		"pipx",
+		"powersave",
 		"preseed",
 		"preset-rtsp-restream",
 		"radxa",
@@ -42,6 +43,7 @@
 		"ruleset",
 		"sysrq",
 		"uefi",
+		"wlan",
 		"xsession"
 	]
 }
