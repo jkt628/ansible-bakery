@@ -33,17 +33,31 @@
     mode: u=rw,go=r
     content: |
       [Unit]
-      Description=juntek Monitor Service
-      After=docker.target
+      Description=juntek_monitor service
+
       [Service]
       Type=simple
       ExecStart=/root/.local/bin/juntek_monitor
-      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+- name: Install juntek_monitor systemd timer
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/juntek_monitor.timer
+    mode: u=rw,go=r
+    content: |
+      [Unit]
+      Description=juntek_monitor timer
+      After=hassio-supervisor.target
+
+      [Timer]
+      OnCalendar=minutely
+
       [Install]
       WantedBy=multi-user.target
 - name: Start juntek_monitor
   ansible.builtin.systemd_service:
-    name: juntek_monitor.service
+    name: juntek_monitor.timer
     enabled: true
     state: started
     daemon_reload: true
