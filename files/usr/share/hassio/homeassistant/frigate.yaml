@@ -31,7 +31,10 @@ cameras:
       width: 2560
       height: 1440
     motion:
-      mask: 0.537,0.001,0.534,0.696,0.815,0.712,0.964,0.003
+      mask: 0.537,0.001,0.459,0.692,0.822,0.712,0.99,0
+      threshold: 30
+      contour_area: 25
+      improve_contrast: 'true'
   driveway:
     enabled: true
     ffmpeg:
@@ -70,8 +73,11 @@ record:
   retain:
     days: 14
     mode: all
-  events:
+  sync_recordings: true
+  alerts:
     retain:
-      default: 60
-      mode: motion
-version: 0.14
+      days: 60
+  detections:
+    retain:
+      days: 60
+version: 0.15-1
