@@ -12,15 +12,15 @@
   register: rtl8851bu
   failed_when: rtl8851bu.rc != 0
   changed_when: false
-- name: Clone RTL8851bu
+- name: Clone RTL8831
   ansible.builtin.git:
-    repo: https://github.com/biglinux/RTL8851bu.git
-    dest: /tmp/RTL8851bu
+    repo: https://github.com/biglinux/RTL8831.git
+    dest: /tmp/RTL8831
     version: main
   when: '"installed" not in rtl8851bu.stdout'
-- name: Install rtl8851bu
+- name: Install rtl8831
   ansible.builtin.command:
-    chdir: /tmp/RTL8851bu
+    chdir: /tmp/RTL8831
     cmd: dkms install .
   when: '"installed" not in rtl8851bu.stdout'
   changed_when: true

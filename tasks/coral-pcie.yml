@@ -23,6 +23,12 @@
     dest: /tmp/gasket-driver
     version: main
   when: gasket.rc != 0
+- name: Replace no_llseek
+  ansible.builtin.replace:
+    path: /tmp/gasket-driver/src/gasket_core.c
+    regexp: no_llseek
+    replace: noop_llseek
+  when: gasket.rc != 0
 - name: Build gasket deb
   ansible.builtin.command:
     chdir: /tmp/gasket-driver
