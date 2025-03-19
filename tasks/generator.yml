@@ -1,0 +1,38 @@
+# -*- mode: ansible -*-
+---
+- name: Pair JDY-31-SPP
+  include_tasks: tasks/pair_bluetooth.yml # noqa: fqcn[action-core] name[missing]
+  vars:
+    MAC: "{{ JDY_31_SPP.MAC }}" # noqa: var-naming[pattern]
+    PIN: "{{ JDY_31_SPP.PIN }}" # noqa: var-naming[pattern]
+- name: Make rfcomm0
+  ansible.builtin.include_tasks: tasks/systemd-drop-in.yml
+  vars:
+    service: bluetooth.service
+    content: |
+      [Unit]
+      Description=rfcomm0
+      [Service]
+      ExecStartPost=-rfcomm bind 0 {{ JDY_31_SPP.MAC }}
+- name: Restart bluetooth
+  ansible.builtin.systemd:
+    name: bluetooth
+    state: restarted
+  when: systemd_drop_in.changed # noqa: no-handler
+- name: Ensure bin directory
+  ansible.builtin.file:
+    path: /usr/local/bin
+    state: directory
+    mode: u=rwx,go=rx
+- name: Install script
+  ansible.builtin.copy:
+    dest: /usr/local/bin/toggle_generator
+    mode: u=rwx,go=rx
+    content: |
+      #!/usr/bin/env bash
+      (printf '\xa0\x01\x01\xA2'; sleep 1; printf '\xa0\x01\x00\xA1') >/dev/rfcomm0
+- name: Configure shell_command in home-assistant
+  include_tasks: tasks/home-assistant-shell-command.yml # noqa: fqcn[action-core] name[missing]
+  vars:
+    shell_commands:
+      toggle_generator: /usr/local/bin/toggle_generator

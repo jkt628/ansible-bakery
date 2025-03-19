@@ -1,0 +1,36 @@
+# -*- mode: ansible -*-
+---
+- name: Install bluez-tools
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - bluez
+    - bluez-tools
+  when: item not in ansible_facts.packages
+- name: Check if device is already paired
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      bt-device --list | grep -q '{{ MAC }}'
+    executable: /bin/bash
+  register: bt_device
+  failed_when: bt_device.rc == 2
+  changed_when: false
+- name: Pair bluetooth device # noqa: risky-shell-pipe
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      bluetoothctl scan le |
+      awk '
+        BEGIN {
+          expire=systime()+60
+        }
+        /{{ MAC }}/ {
+          exit 0
+        }
+        expire<systime() {
+          exit 1
+        }' &&
+      bt-device --connect={{ MAC }} <<<'{{ PIN }}'
+  when: bt_device.rc != 0
+  changed_when: true

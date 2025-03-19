@@ -1,0 +1,19 @@
+# -*- mode: ansible -*-
+# Configure home-assistant shell command(s)
+# vars:
+#   shell_commands: a dictionary of commands
+---
+- name: Create the shell_command leader
+  ansible.builtin.blockinfile:
+    path: /usr/share/hassio/homeassistant/configuration.yaml
+    mode: u=rw,go=r
+    marker: "# {mark} shell_command MANAGED BY ANSIBLE"
+    block: "shell_command:"
+- name: Create the commands
+  ansible.builtin.blockinfile:
+    path: /usr/share/hassio/homeassistant/configuration.yaml
+    mode: u=rw,go=r
+    marker: "# {mark} {{ item.key }} MANAGED BY ANSIBLE"
+    block: "  {{ item.key }}: {{ item.value }}"
+    insertafter: "# END shell_command MANAGED BY ANSIBLE"
+  loop: "{{ shell_commands | dict2items }}"
