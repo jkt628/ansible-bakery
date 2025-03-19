@@ -6,3 +6,17 @@
     src: files/usr/share/hassio/homeassistant/frigate.yaml
     dest: /usr/share/hassio/homeassistant/frigate.yaml
     mode: u=rw,go=
+- name: Install frigate-nvr-check-recording
+  ansible.builtin.copy:
+    dest: /usr/local/bin/frigate-nvr-check-recording
+    mode: u=rwx,go=rx
+    content: |
+      #!/usr/bin/env bash
+      recording=$(find /usr/share/hassio/media/frigate/recordings/ -type f -mmin -1 -exec dirname {} + 2>/dev/null | sort -u | wc -l)
+      (( recording >= 3 )) || docker restart addon_ccab4aaf_frigate-fa
+- name: Install cron job
+  ansible.builtin.cron:
+    name: frigate-nvr-check-recording
+    minute: "1-59/5"
+    job: /usr/local/bin/frigate-nvr-check-recording
+    user: "{{ ansible_user }}"
