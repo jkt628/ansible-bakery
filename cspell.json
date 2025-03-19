@@ -9,6 +9,7 @@
 		"debconf",
 		"dkms",
 		"dnsmasq",
+		"duckdns",
 		"edgetpu",
 		"fqcn",
 		"goserver",

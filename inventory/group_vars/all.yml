@@ -1,1 +1,3 @@
-tftp_server: ledgy.local
+duckdns_domain: moonlitsw
+nfs_server: ledgy.local
+tftp_server: "{{ nfs_server }}"

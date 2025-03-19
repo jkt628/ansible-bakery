@@ -5,6 +5,7 @@
   tasks:
     - include_tasks: tasks/magic-sysrq.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/apt_upgrade_from_backports.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/duckdns.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/rtl8851bu.yml # noqa: fqcn[action-core] name[missing]
