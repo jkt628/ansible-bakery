@@ -1,5 +1,6 @@
 # -*- mode: ansible -*-
-# Create a systemd drop-in file for a service named by the first setting in the content
+# Create a systemd drop-in file for a service named by the first word of Description.
+# WARNING: Description MUST be unique and SHOULD be simple.
 # vars:
 #   service: foo.service
 #   content: |
@@ -15,7 +16,7 @@
     mode: u=rwx,go=rx
 - name: Create systemd drop-in file
   ansible.builtin.copy:
-    dest: "/etc/systemd/system/{{ service }}.d/{{ content | regex_replace('(?m)^\\[.*\\n|=.*\\n.*', '') }}.conf"
+    dest: "/etc/systemd/system/{{ service }}.d/{{ content | regex_search('Description=\\S+', multiline=true) | regex_replace('.*=', '') }}.conf"
     mode: u=rw,go=r
     content: "{{ content }}"
   register: systemd_drop_in

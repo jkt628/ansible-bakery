@@ -16,6 +16,8 @@
   vars:
     service: bluetooth.service
     content: |
+      [Unit]
+      Description=+reset hardware
       [Service]
       ExecStartPost=-rfkill unblock bluetooth
       ExecStartPost=-hciattach -s 1500000 /dev/ttyS1 any 1500000 flow nosleep
