@@ -7,13 +7,13 @@ mqtt:
 go2rtc:
   streams:
     front:
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ front_password }}@192.150.23.25:554/stream1
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ front_password }}@192.168.68.75:554/stream1
       - ffmpeg:front
     driveway:
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ driveway_password }}@192.150.23.27:554/stream1
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ driveway_password }}@192.168.68.54:554/stream1
       - ffmpeg:driveway
     back:
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ back_password }}@192.150.23.26:554/stream1
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ back_password }}@192.168.68.66:554/stream1
       - ffmpeg:back
 
 cameras:
