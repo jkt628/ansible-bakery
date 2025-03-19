@@ -5,7 +5,7 @@
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 86400 # One day
-    default_release: bookworm-backports
+    default_release: "{{ backports_release | default('bookworm-backports') }}"
     force: true
     state: latest # noqa package-latest
     name: "{{ item }}"
