@@ -12,3 +12,12 @@
 - name: Establish deb_architecture
   ansible.builtin.set_fact:
     deb_architecture: "{{ deb_arch.stdout.strip() }}"
+- name: Install requirements for ansible.builtin.apt
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - python3-apt
+  when: item not in ansible_facts.packages
+- name: Update apt cache
+  ansible.builtin.apt:
+    cache_valid_time: 3600 # One hour

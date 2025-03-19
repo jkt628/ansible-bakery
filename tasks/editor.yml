@@ -1,12 +1,6 @@
 # -*- mode: ansible -*-
 ---
 # color me old fashioned
-- name: Install requirements for ansible.builtin.apt
-  ansible.builtin.package:
-    name: "{{ item }}"
-  with_items:
-    - python3-apt
-  when: item not in ansible_facts.packages
 - name: Purge nano
   ansible.builtin.apt:
     name: "{{ item }}"
