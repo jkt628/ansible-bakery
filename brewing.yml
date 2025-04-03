@@ -1,0 +1,13 @@
+# -*- mode: ansible -*-
+- name: Install CraftBrewPi
+  hosts: brewing
+  become: true
+  tasks:
+    - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/wifi-powersave-off.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/editor.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/threads-max.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/mDNS_by_systemd.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/barrier.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/kiosk.yml # noqa: fqcn[action-core] name[missing]

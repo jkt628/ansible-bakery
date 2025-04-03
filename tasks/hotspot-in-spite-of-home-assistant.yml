@@ -27,5 +27,7 @@
   vars:
     service: hassio-supervisor.service
     content: |
+      [Unit]
+      Description=hotspot
       [Service]
       ExecStartPost=/usr/sbin/hotspot

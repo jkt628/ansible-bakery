@@ -1,0 +1,44 @@
+# -*- mode: ansible -*-
+# cspell: disable
+---
+- name: Check and install Python
+  vars:
+    version: "{{ python_version | default('3.13.1') }}"
+    major: "{{ version | regex_replace('\\..*', '') }}"
+    minor: "{{ version | regex_replace('\\.\\d+$', '') }}"
+  block:
+    - name: Check if Python is already installed
+      ansible.builtin.stat:
+        path: /usr/local/bin/python{{ minor }}
+      register: python
+    - name: Install Python pre-requisites
+      ansible.builtin.package:
+        name: "{{ item }}"
+      with_items:
+        - build-essential
+        - zlib1g-dev
+        - libncurses5-dev
+        - libgdbm-dev
+        - libnss3-dev
+        - libssl-dev
+        - libreadline-dev
+        - libffi-dev
+        - libsqlite3-dev
+        - curl
+        - libbz2-dev
+      when: python.stat.exists is false and item not in ansible_facts.packages
+    - name: Install Python
+      ansible.builtin.shell: |
+        set -o pipefail
+        cd /tmp
+        curl -fsSL https://www.python.org/ftp/python/{{ version }}/Python-{{ version }}.tgz | tar xzf -
+        cd Python-{{ version }}
+        ./configure --enable-optimizations --prefix=/usr/local
+        make -j$(nproc)
+        make altinstall
+        ln -sf python{{ minor }} /usr/local/bin/python{{ major }}
+      args:
+        executable: /bin/bash
+      register: python_install
+      changed_when: python_install.rc == 0
+      when: python.stat.exists is false
