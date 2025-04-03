@@ -1,0 +1,27 @@
+[connection]
+id=jkt-indoor
+type=wifi
+autoconnect-retries=0
+llmnr=2
+mdns=2
+
+[wifi]
+cloned-mac-address=preserve
+mode=infrastructure
+powersave=2
+ssid=jkt-indoor
+{% for line in wifi | default([]) %}
+{{ line }}
+{% endfor %}
+
+[wifi-security]
+auth-alg=open
+key-mgmt=wpa-psk
+psk={{ jkt_indoor_psk }}
+
+[ipv4]
+method=auto
+
+[ipv6]
+ip6-privacy=0
+method=auto

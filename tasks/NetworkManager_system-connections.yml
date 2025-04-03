@@ -1,0 +1,8 @@
+# -*- mode: ansible -*-
+---
+- name: Install NetworkManager system-connections
+  ansible.builtin.template:
+    src: files/etc/NetworkManager/system-connections/{{ item }}.nmconnection
+    dest: /etc/NetworkManager/system-connections/{{ item }}.nmconnection
+    mode: u=rw,go=
+  with_items: "{{ items | default(['jkt-indoor']) }}"

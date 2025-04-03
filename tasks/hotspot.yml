@@ -21,4 +21,4 @@
       channel: 5
     wifi_sec:
       key-mgmt: wpa-psk
-      psk: "{{ wifi_password }}"
+      psk: "{{ wifi_psk }}"
