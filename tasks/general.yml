@@ -4,6 +4,7 @@
   ansible.builtin.package:
     name: "{{ item }}"
   with_items:
+    - dnsmasq
     - rsync
     - systemd-timesyncd
   when: 'item not in ansible_facts.packages and "chrony" not in ansible_facts.packages'

@@ -1,0 +1,12 @@
+# -*- mode: ansible -*-
+---
+- include_tasks: tasks/install_packages.yml # noqa: fqcn[action-core] name[missing]
+  vars:
+    packages:
+      - sshfs
+- name: Allow other
+  community.general.ini_file:
+    path: /etc/fuse.conf
+    allow_no_value: true
+    option: user_allow_other
+    mode: u=rw,go=r

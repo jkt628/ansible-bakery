@@ -1,0 +1,29 @@
+# -*- mode: ansible -*-
+---
+- name: Install NFS client
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - nfs-common
+  when: item not in ansible_facts.packages
+- name: Check destination directory
+  ansible.builtin.stat:
+    path: "{{ dst }}"
+  register: dst_stat
+- name: Create destination directory
+  ansible.builtin.file:
+    path: "{{ dst }}"
+    state: directory
+    mode: u=rwx,go=rx
+    owner: "{{ ansible_user }}"
+  when: dst_stat.stat.exists is false
+- name: Mount NFS share
+  ansible.builtin.mount:
+    fstype: nfs4
+    opts: x-systemd.automount,x-systemd.mount-timeout=30,x-systemd.after=network-online.target,_netdev
+    path: "{{ dst }}"
+    src: "{{ src }}"
+    state: mounted
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

@@ -1,0 +1,4 @@
+homeassistant_machine: generic-x86-64
+nfs_server: '192.168.122.1'
+wifi_interface: wlp2s0
+wifi_ssid: jkt-test

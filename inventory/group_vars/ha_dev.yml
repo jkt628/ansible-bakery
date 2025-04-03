@@ -1,0 +1,21 @@
+backports_packages:
+  - autoconf
+  - libssl-dev
+  - libxml2-dev
+  - libxslt1-dev
+  - libjpeg-dev
+  - libffi-dev
+  - libudev-dev
+  - zlib1g-dev
+  - pkg-config
+  - libavformat-dev
+  - libavcodec-dev
+  - libavdevice-dev
+  - libavutil-dev
+  - libswscale-dev
+  - libswresample-dev
+  - libavfilter-dev
+  - ffmpeg
+  - libgammu-dev
+  - build-essential
+  - golang

@@ -2,10 +2,14 @@ all:
   vars:
     ansible_user: jkt
   children:
+    local:
+      hosts:
+        localhost:
     bare:
       hosts:
         orangepizero2w:
         radxa-zero3:
+        rpi4b:
     ha:
       hosts:
         home-assistant:
@@ -19,7 +23,14 @@ all:
       hosts:
         jkt-rv-ha:
         jkt-rv:
-        uefi-x86.local:
+    ha_dev:
+      hosts:
+        fridge-magnet:
+        uefi-x86:
+        buildroot:
     play:
       hosts:
         tiny:
+    brewing:
+      hosts:
+        fridge-magnet:
