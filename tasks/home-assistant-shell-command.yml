@@ -5,15 +5,28 @@
 ---
 - name: Create the shell_command leader
   ansible.builtin.blockinfile:
-    path: /usr/share/hassio/homeassistant/configuration.yaml
+    path: "{{ ha_base }}/homeassistant/configuration.yaml"
     mode: u=rw,go=r
     marker: "# {mark} shell_command MANAGED BY ANSIBLE"
     block: "shell_command:"
+- name: Create the shell_command directory
+  ansible.builtin.file:
+    path: "{{ ha_base }}/homeassistant/shell_command"
+    state: directory
+    mode: u=rwx,go=rx
+- name: Link the shell_command
+  ansible.builtin.file:
+    src: "{{ item.value }}"
+    dest: "{{ ha_base }}/homeassistant/shell_command/{{ item.key }}"
+    state: hard
+    force: true
+    mode: u=rwx,go=
+  loop: "{{ shell_commands | dict2items }}"
 - name: Create the commands
   ansible.builtin.blockinfile:
-    path: /usr/share/hassio/homeassistant/configuration.yaml
+    path: "{{ ha_base }}/homeassistant/configuration.yaml"
     mode: u=rw,go=r
     marker: "# {mark} {{ item.key }} MANAGED BY ANSIBLE"
-    block: "  {{ item.key }}: {{ item.value }}"
+    block: "  {{ item.key }}: shell_command/{{ item.key }}"
     insertafter: "# END shell_command MANAGED BY ANSIBLE"
   loop: "{{ shell_commands | dict2items }}"

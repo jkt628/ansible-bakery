@@ -1,3 +1,4 @@
 duckdns_domain: moonlitsw
+ha_base: /usr/share/hassio
 nfs_server: ledgy.local
 tftp_server: "{{ nfs_server }}"

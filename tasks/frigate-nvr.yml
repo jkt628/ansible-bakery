@@ -4,7 +4,7 @@
 - name: Create supervisor control script
   ansible.builtin.template:
     src: files/usr/share/hassio/homeassistant/frigate.yaml
-    dest: /usr/share/hassio/homeassistant/frigate.yaml
+    dest: "{{ ha_base }}/homeassistant/frigate.yaml"
     mode: u=rw,go=
 - name: Install frigate-nvr-check-recording
   ansible.builtin.copy:
