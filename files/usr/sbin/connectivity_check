@@ -1,0 +1,43 @@
+#!/bin/bash
+# break wpa_supplicant connect / disconnect / fail loop by
+# checking NetworkManager connectivity a couple times and maybe restart wpa_supplicant.
+# this script is designed to run alternately on even and odd seconds.
+# because this script generally runs in the context of homeassistant where limited commands
+# are available, it uses dbus APIs instead of nmcli and systemctl.
+# see https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMConnectivityState.
+
+P=${0##*/}
+
+# retrieve previous and record current
+read -r previous < "/var/tmp/$P"
+current=$(dbus-send --system --print-reply --dest=org.freedesktop.NetworkManager \
+	/org/freedesktop/NetworkManager \
+	org.freedesktop.DBus.Properties.Get \
+	string:"org.freedesktop.NetworkManager" \
+	string:"Connectivity" |
+	awk '/uint32/{print $3}')
+echo "$current" > "/var/tmp/$P"
+(( current < 2 ))
+bad=$(( !$? )) # exit codes are inverted
+
+# even seconds are simple
+(( EPOCHSECONDS % 2 == 0 )) && exit $(( bad ))
+
+# on odd seconds check current then previous connectivity
+(( !bad )) && exit 0
+case "$previous" in
+	2|portal|3|limited|4|full|"" ) # not great but might be reconnecting
+		exit 1;;
+	0|unknown)
+		dbus-send --system --print-reply --dest=org.freedesktop.systemd1 \
+		/org/freedesktop/systemd1/unit/NetworkManager_2eservice \
+		org.freedesktop.systemd1.Unit.Restart \
+		string:replace
+		;;
+	# 1|none) remains
+esac
+dbus-send --system --print-reply --dest=org.freedesktop.systemd1 \
+	/org/freedesktop/systemd1/unit/wpa_supplicant_2eservice \
+	org.freedesktop.systemd1.Unit.Restart \
+	string:replace
+exit 1

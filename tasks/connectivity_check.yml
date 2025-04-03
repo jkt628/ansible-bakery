@@ -1,0 +1,12 @@
+# -*- mode: ansible -*-
+---
+- name: Install connectivity check
+  ansible.builtin.copy:
+    dest: /usr/local/sbin/connectivity_check
+    src: files/usr/sbin/connectivity_check
+    mode: u=rwx,go=r
+- name: Register shell command
+  include_tasks: tasks/home-assistant-shell-command.yml # noqa: fqcn[action-core] name[missing]
+  vars:
+    shell_commands:
+      connectivity_check: /usr/local/sbin/connectivity_check
