@@ -1,0 +1,4 @@
+overlay_prefix: radxa-zero3
+overlays:
+  - disabled-ethernet
+# - external-antenna

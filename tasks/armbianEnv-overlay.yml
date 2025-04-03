@@ -1,0 +1,12 @@
+# -*- mode: ansible -*-
+---
+- name: Set overlay_prefix
+  ansible.builtin.lineinfile:
+    path: /boot/armbianEnv.txt
+    regexp: ^overlay_prefix=
+    line: overlay_prefix={{ overlay_prefix }}
+- name: Set overlays
+  ansible.builtin.lineinfile:
+    path: /boot/armbianEnv.txt
+    regexp: ^overlays=
+    line: overlays={{ overlays | join(' ') }}

@@ -1,5 +1,6 @@
 {
 	"words": [
+		"armbian",
 		"autoconnect",
 		"autoipd",
 		"autologin",
@@ -24,6 +25,7 @@
 		"insertafter",
 		"juntek",
 		"libavahi",
+		"lineinfile",
 		"lxde",
 		"mdns",
 		"mgmt",

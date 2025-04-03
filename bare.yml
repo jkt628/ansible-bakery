@@ -14,6 +14,12 @@
         regexp: orangepizero2w|radxa-zero3
         replace: jkt-rv-ha
     - include_tasks: tasks/%sudo.yml # noqa: fqcn[action-core] name[missing]
+- name: Update overlays on radxa-zero3
+  hosts:
+    - radxa-zero3
+  become: true
+  tasks:
+    - include_tasks: tasks/armbianEnv-overlay.yml # noqa: fqcn[action-core] name[missing]
 - name: Reboot orangepizero2w or radxa-zero3
   hosts:
     - orangepizero2w

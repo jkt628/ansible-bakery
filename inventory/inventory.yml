@@ -10,6 +10,11 @@ all:
       hosts:
         home-assistant:
           desktop: lxqt
+    radxa_zero3:
+      hosts:
+        radxa-zero3:
+        jkt-rv-ha:
+        jkt-rv:
     rv_ha:
       hosts:
         jkt-rv-ha:
