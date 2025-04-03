@@ -1,0 +1,10 @@
+# -*- mode: ansible -*-
+---
+- name: Install packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items: "{{ packages }}"
+  when: item not in ansible_facts.packages
+- name: Mark packages as manual
+  ansible.builtin.command: apt-mark manual {{ packages | join(' ') }}
+  changed_when: false

@@ -1,11 +1,9 @@
 # -*- mode: ansible -*-
 ---
-- name: Install rfkill
-  ansible.builtin.package:
-    name: "{{ item }}"
-  with_items:
-    - rfkill
-  when: item not in ansible_facts.packages
+- include_tasks: tasks/install_packages.yml # noqa: fqcn[action-core] name[missing]
+  vars:
+    packages:
+      - rfkill
 - name: Fix ConfigurationDirectoryMode
   ansible.builtin.file:
     path: /etc/bluetooth
