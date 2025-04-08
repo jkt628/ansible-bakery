@@ -29,6 +29,7 @@ case "$previous" in
 	2|portal|3|limited|4|full|"" ) # not great but might be reconnecting
 		exit 1;;
 	0|unknown)
+		rm -f /etc/NetworkManager/system-connections/Supervisor*.nmconnection
 		dbus-send --system --print-reply --dest=org.freedesktop.systemd1 \
 		/org/freedesktop/systemd1/unit/NetworkManager_2eservice \
 		org.freedesktop.systemd1.Unit.Restart \
