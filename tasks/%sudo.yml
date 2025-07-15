@@ -1,5 +1,10 @@
 # -*- mode: ansible -*-
 ---
+- name: Add user to sudo group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: sudo
+    append: true
 - name: Configure %sudo
   ansible.builtin.copy:
     dest: /etc/sudoers.d/%sudo

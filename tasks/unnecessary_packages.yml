@@ -1,0 +1,9 @@
+# -*- mode: ansible -*-
+---
+- name: Remove unnecessary packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: absent
+    autoremove: true
+    purge: true
+  with_items: "{{ unnecessary_packages }}"

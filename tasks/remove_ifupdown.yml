@@ -3,6 +3,22 @@
 - name: Remove interfaces
   ansible.builtin.command: rm -f /etc/network/interfaces*
   changed_when: false
+  register: interfaces
+- name: Remove section ifupdown from NetworkManager
+  community.general.ini_file:
+    path: /etc/NetworkManager/NetworkManager.conf
+    create: false
+    section: ifupdown
+    state: absent
+- name: Remove ifupdown from plugins
+  ansible.builtin.replace:
+    path: /etc/NetworkManager/NetworkManager.conf
+    regexp: ifupdown,?
+    replace: ''
+- name: Restart NetworkManager
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: restarted
 - name: Remove ifupdown
   ansible.builtin.package:
     name: "{{ item }}"
@@ -10,5 +26,5 @@
   with_items:
     - ifupdown
     - ethtool
-    - connman
+    - connman # cspell: disable-line
   when: item in ansible_facts.packages

@@ -1,0 +1,23 @@
+# -*- mode: ansible -*-
+- name: Install bluetooth development requirements
+  hosts: bt_dev
+  become: true
+  tasks:
+    - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/editor.yml # noqa: fqcn[action-core] name[missing]
+#     - include_tasks: tasks/apt_upgrade_from_backports.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/%sudo.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/general.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/sshfs.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/install_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/NetworkManager_system-connections.yml # noqa: fqcn[action-core] name[missing]
+      vars:
+        items:
+          - wired
+          - jkt-indoor
+    - include_tasks: tasks/mDNS_by_systemd.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/remove_ifupdown.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/install_remote_desktop.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/unnecessary_packages.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/reboot+wait.yml # noqa: fqcn[action-core] name[missing]

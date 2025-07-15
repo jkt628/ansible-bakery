@@ -4,11 +4,6 @@ juntek_monitor_packages:
 - python3-paho-mqtt
 - python3-serial
 - python3-yaml
-avahi_packages:
-- avahi-autoipd
-- avahi-daemon
-- libavahi-core7
-- libavahi-glib1
 remote_desktop_packages:
 - chromium
 - lxde
