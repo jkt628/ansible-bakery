@@ -1,9 +1,5 @@
 backports_packages:
   - build-essential
-remote_desktop_packages:
-  - chromium
-  - lxqt
-  - x2goserver-xsession
 unnecessary_packages:
   - firefox*
   - libreoffice*
