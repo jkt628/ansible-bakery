@@ -1,0 +1,66 @@
+# -*- mode: ansible -*-
+---
+- name: Install nRF Sniffer for Bluetooth LE prerequisites
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items: "{{ nRF_sniffer_packages }}"
+  when: item not in ansible_facts.packages
+- name: Copy J-Link installer
+  # download from https://www.segger.com/downloads/jlink
+  ansible.builtin.copy:
+    src: files/tmp/JLink_Linux_V{{ jlink_version | replace('.', '') }}_x86_64.deb
+    dest: /tmp/JLink.deb
+    mode: a=r
+  when: ansible_facts.packages['jlink'] is not defined or ansible_facts.packages['jlink'][0].version is version(jlink_version, '<')
+- name: Install J-Link
+  ansible.builtin.apt:
+    deb: /tmp/JLink.deb
+  when: ansible_facts.packages['jlink'] is not defined or ansible_facts.packages['jlink'][0].version is version(jlink_version, '<')
+- name: Clean J-Link installer
+  ansible.builtin.file:
+    path: /tmp/JLink.deb
+    state: absent
+- name: Install nrf-udev
+  ansible.builtin.apt:
+    deb: |
+      https://github.com/NordicSemiconductor/nrf-udev/releases/download/v{{ nrf_udev_version }}/nrf-udev_{{ nrf_udev_version }}-all.deb
+  when: ansible_facts.packages['nrf_udev'] is not defined or ansible_facts.packages['nrf_udev'][0].version is version(nrf_udev_version, '<') # noqa: yaml[line-length]
+- name: Install nrfutil
+  ansible.builtin.get_url:
+    url: https://files.nordicsemi.com/artifactory/swtools/external/nrfutil/executables/x86_64-unknown-linux-gnu/nrfutil
+    dest: /usr/local/bin/nrfutil
+    mode: a=rx
+- name: Check nrfutil
+  become: false
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      nrfutil search | grep Installed
+    executable: /bin/bash
+  register: search
+  changed_when: false
+- name: Install device
+  become: false
+  ansible.builtin.command: nrfutil install device
+  register: device
+  when: search.stdout.find('device') == -1
+  changed_when: device.rc == 0
+- name: Install ble-sniffer
+  become: false
+  ansible.builtin.command: nrfutil install ble-sniffer
+  register: sniffer
+  when: search.stdout.find('ble-sniffer') == -1
+  changed_when: sniffer.rc == 0
+- name: Prepare BLE Capture
+  become: false
+  ansible.builtin.file:
+    path: .config/wireshark/extcap
+    state: directory
+    mode: u=rwx,go=rx
+  register: prepare
+- name: Install BLE Capture
+  become: false
+  ansible.builtin.command: nrfutil ble-sniffer bootstrap
+  register: capture
+  when: sniffer.changed or prepare.changed
+  changed_when: capture.rc == 0

@@ -1,3 +1,4 @@
+# cspell:disable
 backports_packages:
   - build-essential
 unnecessary_packages:
@@ -6,3 +7,8 @@ unnecessary_packages:
   - xsane*
   - sane-*
   - libsane*
+nRF_sniffer_packages:
+  - libusb-1.0-0-dev
+  - wireshark
+jlink_version: '8.42'
+nrf_udev_version: '1.0.1'
