@@ -11,4 +11,5 @@ nRF_sniffer_packages:
   - libusb-1.0-0-dev
   - wireshark
 jlink_version: '8.42'
+nrf_connect_version: '5.2.0'
 nrf_udev_version: '1.0.1'
