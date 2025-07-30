@@ -9,15 +9,16 @@
       dns=systemd-resolved
   register: dns
 - name: Enable mDNS on network connections
-  ansible.builtin.shell: |
-    set -o pipefail
-    nmcli -t -f UUID,TYPE c | awk -F: '/802-/{system("nmcli c modify " $1 " connection.mdns yes")}'
-  args:
-    executable: /bin/bash
+  ansible.builtin.copy:
+    dest: /etc/NetworkManager/conf.d/mDNS.conf
+    mode: u=rw,go=r
+    content: |
+      [connection]
+      mdns=2
+      llmnr=0
   register: mdns
-  changed_when: mdns.rc == 0
 - name: Restart NetworkManager
   ansible.builtin.systemd:
     name: NetworkManager
     state: restarted
-  when: dns.changed # noqa: no-handler
+  when: dns.changed or mdns.changed # noqa: no-handler

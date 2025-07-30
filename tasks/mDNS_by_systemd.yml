@@ -28,6 +28,8 @@
     content: |
       [Resolve]
       DNSStubListener=yes
+      MulticastDNS=yes
+      LLMNR=no
   register: stub
 - name: Restart systemd-resolved
   ansible.builtin.systemd:
