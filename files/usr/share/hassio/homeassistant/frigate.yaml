@@ -8,13 +8,13 @@ go2rtc:
   streams:
     front:
       - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ front_password }}@192.168.1.18:554/stream1
-      - ffmpeg:front
+      - ffmpeg:front#hardware
     driveway:
       - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ driveway_password }}@192.168.1.16:554/stream1
-      - ffmpeg:driveway
+      - ffmpeg:driveway#hardware
     back:
       - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ back_password }}@192.168.1.17:554/stream1
-      - ffmpeg:back
+      - ffmpeg:back#hardware
 
 cameras:
   front:
@@ -31,10 +31,16 @@ cameras:
       width: 2560
       height: 1440
     motion:
-      mask: 0.537,0.001,0.459,0.692,0.822,0.712,0.99,0
+      mask: 0.001,0.388,0.346,0.19,1,0.126,1,0,0,0
       threshold: 30
       contour_area: 25
       improve_contrast: 'true'
+    zones:
+      Front_Person_Detection:
+        coordinates: 0.291,0.207,0,0.568,0,1,1,1
+        loitering_time: 0
+        objects: person
+        inertia: 3
   driveway:
     enabled: true
     ffmpeg:
@@ -61,6 +67,8 @@ cameras:
       enabled: true
       width: 2560
       height: 1440
+    motion:
+      mask: 0,1,0.194,0.998,0.404,0.39,0.349,0,0,0
 detectors:
   coral:
     type: edgetpu
@@ -68,6 +76,11 @@ detectors:
 objects:
   track:
     - person
+  filters:
+    person:
+      # Optional: minimum width*height of the bounding box for the detected object (default: 0)
+      min_area: 15000
+
 record:
   enabled: true
   retain:
