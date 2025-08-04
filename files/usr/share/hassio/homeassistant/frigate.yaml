@@ -1,35 +1,12 @@
-mqtt:
-  enabled: true
-  host: core-mosquitto
-  user: frigate-nvr
-  password: "{{ frigate_nvr_password }}"
-
-go2rtc:
-  streams:
-    front:
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ front_password }}@192.168.1.18:554/stream1
-      - ffmpeg:front#hardware
-    driveway:
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ driveway_password }}@192.168.1.16:554/stream1
-      - ffmpeg:driveway#hardware
-    back:
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ back_password }}@192.168.1.17:554/stream1
-      - ffmpeg:back#hardware
-
 cameras:
   front:
     enabled: true
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/front
-          input_args: preset-rtsp-restream
           roles:
             - detect
             - record
-    detect:
-      enabled: true
-      width: 2560
-      height: 1440
     motion:
       mask: 0.001,0.388,0.346,0.19,1,0.126,1,0,0,0
       threshold: 30
@@ -46,33 +23,52 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/driveway
-          input_args: preset-rtsp-restream
           roles:
             - detect
             - record
-    detect:
-      enabled: true
-      width: 2560
-      height: 1440
   back:
     enabled: true
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/back
-          input_args: preset-rtsp-restream
           roles:
             - detect
             - record
-    detect:
-      enabled: true
-      width: 2560
-      height: 1440
     motion:
       mask: 0,1,0.194,0.998,0.404,0.39,0.349,0,0,0
+
+detect:
+  enabled: true
+  width: 2560
+  height: 1440
+
 detectors:
   coral:
     type: edgetpu
     device: pci
+
+ffmpeg:
+  hwaccel_args: preset-intel-qsv-h264
+  input_args: preset-rtsp-restream
+
+go2rtc:
+  streams:
+    front:
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ front_password }}@192.168.1.18:554/stream1
+      - ffmpeg:front#hardware
+    driveway:
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ driveway_password }}@192.168.1.16:554/stream1
+      - ffmpeg:driveway#hardware
+    back:
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ back_password }}@192.168.1.17:554/stream1
+      - ffmpeg:back#hardware
+
+mqtt:
+  enabled: true
+  host: core-mosquitto
+  user: frigate-nvr
+  password: "{{ frigate_nvr_password }}"
+
 objects:
   track:
     - person
