@@ -8,6 +8,7 @@
 		"avahi",
 		"blockinfile",
 		"bluetoothctl",
+		"bluez",
 		"chdir",
 		"configargparse",
 		"debconf",

@@ -3,6 +3,7 @@
 - include_tasks: tasks/install_packages.yml # noqa: fqcn[action-core] name[missing]
   vars:
     packages:
+      - bluez
       - rfkill
 - name: Fix ConfigurationDirectoryMode
   ansible.builtin.file:
@@ -23,5 +24,6 @@
 - name: Restart bluetooth
   ansible.builtin.systemd:
     name: bluetooth
+    enabled: true
     state: restarted
   when: systemd_drop_in.changed # noqa: no-handler
