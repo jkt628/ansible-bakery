@@ -43,6 +43,4 @@
     force: true
   register: resolv_conf
 - include_tasks: tasks/mDNS_by_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
-  when: '"network-manager" in ansible_facts.packages and resolved.changed and avahi.changed and resolved_conf.changed and stub.changed and resolv_conf.changed'
-- include_tasks: tasks/mDNS_by_resolvectl.yml # noqa: fqcn[action-core] name[missing]
-  when: '"network-manager" not in ansible_facts.packages'
+  when: '"network-manager" in ansible_facts.packages and avahi.changed and resolved_conf.changed and stub.changed and resolv_conf.changed'
