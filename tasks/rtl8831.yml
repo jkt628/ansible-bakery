@@ -6,6 +6,7 @@
   with_items:
     - dkms
     - git
+    - linux-headers-generic
   when: item not in ansible_facts.packages
 - name: Check if RTL8851bu is already installed
   ansible.builtin.command: dkms status -m rtl8851bu

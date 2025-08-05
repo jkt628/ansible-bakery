@@ -8,7 +8,7 @@
 - name: Copy J-Link installer
   # download from https://www.segger.com/downloads/jlink
   ansible.builtin.copy:
-    src: files/tmp/JLink_Linux_V{{ jlink_version | replace('.', '') }}_x86_64.deb
+    src: files/tmp/JLink_Linux_V{{ jlink_version | replace('.', '') }}_{{ 'x86_64' if deb_architecture == 'amd64' else deb_architecture }}.deb
     dest: /tmp/JLink.deb
     mode: a=r
   when: ansible_facts.packages['jlink'] is not defined or ansible_facts.packages['jlink'][0].version is version(jlink_version, '<')
@@ -27,7 +27,7 @@
   when: ansible_facts.packages['nrf_udev'] is not defined or ansible_facts.packages['nrf_udev'][0].version is version(nrf_udev_version, '<') # noqa: yaml[line-length]
 - name: Install nrfutil
   ansible.builtin.get_url:
-    url: https://files.nordicsemi.com/artifactory/swtools/external/nrfutil/executables/x86_64-unknown-linux-gnu/nrfutil
+    url: https://files.nordicsemi.com/artifactory/swtools/external/nrfutil/executables/{{ 'x86_64' if deb_architecture == 'amd64' else 'aarch64' }}-unknown-linux-gnu/nrfutil # noqa: yaml[line-length]
     dest: /usr/local/bin/nrfutil
     mode: a=rx
 - name: Check nrfutil
@@ -56,12 +56,14 @@
     url: https://eu.files.nordicsemi.com/ui/api/v1/download?repoKey=web-assets-com_nordicsemi&path=external%2fswtools%2fncd%2flauncher%2fv{{ nrf_connect_version }}%2fnrfconnect-{{ nrf_connect_version }}-x86_64.AppImage # noqa: yaml[line-length]
     dest: /usr/local/bin/nrfconnect-{{ nrf_connect_version }}-x86_64.AppImage
     mode: a=rx
+  when: deb_architecture == 'amd64'
 - name: Install nrfconnect
   ansible.builtin.file:
     path: /usr/local/bin/nrfconnect
     state: link
     src: /usr/local/bin/nrfconnect-{{ nrf_connect_version }}-x86_64.AppImage
     mode: u=rwx,go=rx
+  when: deb_architecture == 'amd64'
 - name: Prepare BLE Capture
   become: false
   ansible.builtin.file:

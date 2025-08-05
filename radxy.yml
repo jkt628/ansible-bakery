@@ -1,0 +1,30 @@
+# -*- mode: ansible -*-
+- name: Rename from radxa-zero3 to radxy
+  hosts: radxa-zero3
+  become: true
+  tasks:
+    - include_tasks: tasks/threads-max.yml # noqa: fqcn[action-core] name[missing]
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: radxy
+        use: debian
+    - name: Set hosts
+      ansible.builtin.replace:
+        path: /etc/hosts
+        regexp: radxa-zero3
+        replace: radxy
+    - include_tasks: tasks/%sudo.yml # noqa: fqcn[action-core] name[missing]
+- name: Update overlays on radxa-zero3
+  hosts:
+    - radxa-zero3
+  become: true
+  tasks:
+    - include_tasks: tasks/armbianEnv-overlay.yml # noqa: fqcn[action-core] name[missing]
+- name: Reboot radxa-zero3
+  hosts:
+    - radxa-zero3
+  become: true
+  tasks:
+    - name: Reboot
+      ansible.builtin.reboot:
+        pre_reboot_delay: 10
