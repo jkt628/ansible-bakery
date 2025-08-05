@@ -2,4 +2,3 @@ avahi_packages:
 - avahi-autoipd
 - avahi-daemon
 - libavahi-core7
-- libavahi-glib1
