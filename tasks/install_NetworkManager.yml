@@ -12,3 +12,9 @@
   with_items:
     - nm-tray
   when: '"lxqt" in ansible_facts.packages'
+- name: Disable systemd-networkd
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: stopped
+    enabled: false
+    masked: true
