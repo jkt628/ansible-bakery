@@ -19,4 +19,10 @@
     src: files/kiosk.tar.gz
     dest: "/home/{{ ansible_user }}"
     owner: "{{ ansible_user }}"
-    creates: "/home/{{ ansible_user }}/.config/autostart/kiosk.desktop"
+    creates: "/home/{{ ansible_user }}/bin/kiosk_check"
+- name: Check kiosk
+  ansible.builtin.cron:
+    name: kiosk_check
+    minute: "*"
+    job: /home/{{ ansible_user }}/bin/kiosk_check
+    user: "{{ ansible_user }}"

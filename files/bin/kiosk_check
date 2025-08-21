@@ -1,0 +1,13 @@
+#!/bin/bash
+
+PID=$(pidof chromium) || exit # do not start if not already running
+STAT=$(pidstat -h -p "${PID// /,}" 4 1)
+awk <<<"$STAT" ' # video requires at least 50% CPU
+  BEGIN {sum = 0.0}
+  NR>3 {sum += $9} # skip header
+  END {exit(sum < 50.0)} # invert for bad
+' || {
+  # restart
+  pkill chromium
+  (DISPLAY=:0 /home/jkt/bin/kiosk >/dev/null 2>&1 &)
+}
