@@ -15,14 +15,20 @@
   changed_when: false
 - name: Clone RTL8831
   ansible.builtin.git:
-    repo: https://github.com/biglinux/RTL8831.git
+    repo: https://github.com/shenmintao/rtl8831.git
     dest: /tmp/RTL8831
     version: main
   when: '"installed" not in rtl8851bu.stdout'
-- name: Install rtl8831
+- name: Install rtl8831 driver
   ansible.builtin.command:
     chdir: /tmp/RTL8831
     cmd: dkms install .
+  when: '"installed" not in rtl8851bu.stdout'
+  changed_when: true
+- name: Install rtl8831 firmware
+  ansible.builtin.command:
+    chdir: /tmp/RTL8831
+    cmd: cp -r rtl_bt /lib/firmware/
   when: '"installed" not in rtl8851bu.stdout'
   changed_when: true
 - name: Request reboot
