@@ -7,7 +7,7 @@ awk <<<"$STAT" ' # video requires at least 50% CPU
   NR>3 {sum += $9} # skip header
   END {exit(sum < 50.0)} # invert for bad
 ' || {
-  # restart
+  logger -t kiosk_check 'restarting kiosk'
   pkill chromium
   (DISPLAY=:0 /home/jkt/bin/kiosk >/dev/null 2>&1 &)
 }
