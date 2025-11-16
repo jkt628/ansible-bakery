@@ -40,3 +40,7 @@ all:
     brewing:
       hosts:
         fridge-magnet:
+    gattacker:
+      hosts:
+        debian:
+        raspberrypi:
