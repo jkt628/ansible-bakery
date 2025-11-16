@@ -3,7 +3,7 @@
 - include_tasks: tasks/install_pipx.yml # noqa: fqcn[action-core] name[missing]
 - include_tasks: tasks/install_packages.yml # noqa: fqcn[action-core] name[missing]
   vars:
-    packages: "{{ juntek_monitor_packages | tojson }}"
+    packages: "{{ juntek_monitor_packages }}"
 - name: Install juntek_monitor
   community.general.pipx:
     name: juntek_monitor
