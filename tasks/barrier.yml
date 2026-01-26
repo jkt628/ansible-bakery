@@ -1,5 +1,11 @@
 # -*- mode: ansible -*-
 ---
+- name: Add oldstable repository
+  ansible.builtin.apt_repository:
+    repo: deb http://ftp.us.debian.org/debian oldstable main
+    state: present
+    filename: oldstable
+    update_cache: true
 - name: Install barrier
   ansible.builtin.package:
     name: "{{ item }}"
