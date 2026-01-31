@@ -1,0 +1,7 @@
+# -*- mode: ansible -*-
+---
+- name: Set systemd default target
+  ansible.builtin.file:
+    path: /etc/systemd/system/default.target
+    state: link
+    src: /usr/lib/systemd/system/{{ systemd_default_target | default('multi-user.target') }}
