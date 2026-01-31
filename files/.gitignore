@@ -1,3 +1,4 @@
 tmp/
 *.gz
 *.xz
+*.qcow2

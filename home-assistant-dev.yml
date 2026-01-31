@@ -5,20 +5,30 @@
   tasks:
     - include_tasks: tasks/vars+packages.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/editor.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/docker-ce.yml # noqa: fqcn[action-core] name[missing]
-#    - include_tasks: tasks/apt_upgrade_from_backports.yml # noqa: fqcn[action-core] name[missing]
-#    - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
+    # - include_tasks: tasks/apt_upgrade_from_backports.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/%sudo.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/autologin.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/barrier.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/general.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/install_python.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/install_packages.yml # noqa: fqcn[action-core] name[missing]
-      vars:
-        packages:
-          - golang
-    - include_tasks: tasks/sshfs.yml # noqa: fqcn[action-core] name[missing]
+    # - include_tasks: tasks/install_python.yml # noqa: fqcn[action-core] name[missing]
+    # - include_tasks: tasks/install_packages.yml # noqa: fqcn[action-core] name[missing]
+    #   vars:
+    #     packages:
+    #       - golang
+    # - include_tasks: tasks/sshfs.yml # noqa: fqcn[action-core] name[missing]
+    # - include_tasks: tasks/install_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
+    # - include_tasks: tasks/NetworkManager_system-connections.yml # noqa: fqcn[action-core] name[missing]
+    #   vars:
+    #     items:
+    #       - wired
+    #       - jkt-indoor
+    # - include_tasks: tasks/mDNS_by_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/mDNS_by_systemd.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/nfs-mount.yml # noqa: fqcn[action-core] name[missing]
-      vars:
-        src: "{{ nfs_server }}:/src"
-        dst: "/home/{{ ansible_user }}/go/src"
+    # - include_tasks: tasks/remove_ifupdown.yml # noqa: fqcn[action-core] name[missing]
+    # - include_tasks: tasks/nfs-mount.yml # noqa: fqcn[action-core] name[missing]
+    #   vars:
+    #     src: "{{ nfs_server }}:/src"
+    #     dst: "/home/{{ ansible_user }}/go/src"
+    - include_tasks: tasks/HAOS-VM.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/reboot+wait.yml # noqa: fqcn[action-core] name[missing]

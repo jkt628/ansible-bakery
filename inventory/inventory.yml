@@ -29,12 +29,15 @@ all:
         jkt-rv:
     ha_dev:
       hosts:
-        fridge-magnet:
-        uefi-x86:
-        buildroot:
+        # fridge-magnet:
+        # uefi-x86:
+        # buildroot:
+        radxy:
+        thinny:
     play:
       hosts:
         tiny:
+        haos-thinny:
     brewing:
       hosts:
         fridge-magnet:

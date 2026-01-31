@@ -1,0 +1,20 @@
+# Work within the limits of HAOS 16.3 to mount virtiofs shares from the host system as media.
+
+# INSTALL
+# Format a USB stick with a single partition labeled "CONFIG".
+# Create a directory "/udev" on the CONFIG partition.
+# Copy this file and the script "81-mount-virtiofs-by-target.sh" into the "/udev" directory.
+# Cleanly umount and disconnect the USB stick.
+# Create a share on the host system.
+#   With Virtual Machine Manager:
+#   - Click Details
+#   - Click Add Hardware
+#   - Click Filesystem
+#   - Select Driver 'virtiofs'
+#   - Set the Source Path to the desired host directory
+#   - Set the Target Path to the desired tag, e.g., /mnt/data/supervisor/media
+#   - Click Finish
+# Plug the USB stick into the host system and redirect into the guest HAOS.
+# Reboot the HAOS system to have the udev rule and script take effect.
+
+KERNEL=="virtiofs", RUN{program}+="/usr/bin/systemd-cat --stderr-priority=err /etc/udev/rules.d/81-mount-virtiofs-by-target.sh"

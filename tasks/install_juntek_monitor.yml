@@ -35,7 +35,8 @@
 
       [Service]
       Type=simple
-      ExecStart=/root/.local/bin/juntek_monitor
+      EnvironmentFile=-/etc/profile.d/qemu-hook-haos.sh
+      ExecStart=bash -c 'MQTT_BROKER=${HAOS_IP:-localhost} exec /root/.local/bin/juntek_monitor'
 
       [Install]
       WantedBy=multi-user.target

@@ -1,0 +1,193 @@
+# -*- mode: ansible -*-
+---
+- name: Customize latest HAOS image
+  delegate_to: localhost
+  connection: local
+  block:
+    - include_tasks: tasks/haos-customize.yml # noqa: fqcn[action-core] name[missing]
+- name: Display HAOS image details
+  ansible.builtin.debug:
+    msg: "Customized HAOS image file: files/{{ haos_qcow }}"
+- name: Create hook directory
+  ansible.builtin.file:
+    path: /etc/libvirt/hooks/qemu.d
+    state: directory
+    mode: u=rwx,go=rx
+- name: Install network hook for libvirt
+  ansible.builtin.copy:
+    src: files/etc/libvirt/hooks/qemu.d/haos
+    dest: /etc/libvirt/hooks/qemu.d/haos
+    mode: u=rwx,go=rx
+- name: Install qemu / kvm / virt-manager
+  ansible.builtin.include_tasks:
+    file: tasks/install_packages.yml
+  vars:
+    packages:
+      - bridge-utils
+      - libvirt-daemon-system
+      - python3-libvirt
+      - python3-lxml # cspell:words lxml
+      - virt-manager
+      - virtiofsd
+- name: Install additional packages on aarch64
+  ansible.builtin.include_tasks:
+    file: tasks/install_packages.yml
+  vars:
+    packages:
+      - qemu-efi-aarch64
+      - ipxe-qemu # cspell:words ipxe
+  when: ansible_facts['architecture'] == 'aarch64'
+- name: Add user to group libvirt
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: libvirt
+    append: true
+- name: Start libvirt network default
+  community.libvirt.virt_net:
+    name: default
+    state: active
+# sad this can't combine with above but virt_net is not idempotent
+- name: Enable autostart for libvirt network default
+  community.libvirt.virt_net:
+    name: default
+    autostart: true
+- name: Install HAOS image
+  ansible.builtin.copy:
+    src: files/{{ haos_qcow }}
+    dest: /var/lib/libvirt/images/{{ haos_qcow }}
+    force: false
+    owner: root
+    group: root
+    mode: u=rw,go=
+- name: Install HAOS guest
+  community.libvirt.virt_install:
+    name: haos
+    boot: uefi
+    boot_opts: firmware.feature0.name=secure-boot,firmware.feature0.enabled=no
+    channel_devices:
+      - type: unix
+        target:
+          name: org.qemu.guest_agent.0
+          type: virtio # cspell:words virtio
+    controller:
+      type: virtio-serial
+    disks:
+      - path: /var/lib/libvirt/images/{{ haos_qcow }}
+    graphics:
+      type: "{{ 'spice' if ansible_facts['architecture'] == 'x86_64' else 'vnc' }}"
+    import: true
+    memory: "{{ haos.memory | default(1024) }}"
+    memory_opts:
+      current_memory: 1024
+    memorybacking: # cspell:words memorybacking
+      access:
+        mode: shared
+      allocation:
+        mode: ondemand # cspell:words ondemand
+      # this is needed but not supported, fixed below
+      # source:
+      #   type: memfd
+    networks:
+      - network: default
+    osinfo:
+      name: generic
+    vcpus: "{{ haos.vcpus | default(2) }}"
+- name: Kill HAOS guest to customize
+  community.libvirt.virt:
+    name: haos
+    state: destroyed
+
+# Customize HAOS domain XML
+- name: Get HAOS domain XML
+  community.libvirt.virt:
+    name: haos
+    command: get_xml
+  register: haos_xml
+- name: Add memfd backing
+  community.general.xml:
+    xmlstring: "{{ haos_xml.get_xml }}" # cspell:words xmlstring
+    xpath: /domain/memoryBacking/source
+    attribute: type
+    value: memfd # cspell:words memfd
+  register: haos_xml_update
+- name: Customize for x86_64
+  # WARNING: register applies even when skipped
+  when: ansible_facts['architecture'] == 'x86_64'
+  block:
+    - name: Ensure media directory exists
+      ansible.builtin.file:
+        path: /mnt/data/supervisor/media
+        state: directory
+        owner: root
+        group: root
+        mode: u=rwx,go=rx
+    - name: Ensure addon_configs directory exists
+      ansible.builtin.file:
+        path: /mnt/data/supervisor/addon_configs
+        state: directory
+        owner: root
+        group: root
+        mode: u=rwx,go=rx
+    - name: Disable VMware emulation
+      community.general.xml:
+        xmlstring: "{{ haos_xml_update.xmlstring }}"
+        xpath: /domain/features/vmport # cspell:words vmport
+        attribute: state
+        value: 'off'
+      register: haos_x86_update
+    - name: Remove tpm
+      community.general.xml:
+        xmlstring: "{{ haos_x86_update.xmlstring }}"
+        xpath: /domain/devices/tpm
+        state: absent
+      register: haos_x86_update
+    - name: Mount media
+      community.general.xml:
+        xmlstring: "{{ haos_x86_update.xmlstring }}"
+        xpath: /domain/devices
+        state: present
+        add_children:
+          - filesystem:
+              type: mount
+              accessmode: passthrough # cspell:words accessmode
+              _:
+                - driver:
+                    type: virtiofs
+                - source:
+                    dir: /mnt/data/supervisor/media
+                - target:
+                    dir: /mnt/data/supervisor/media
+      register: haos_x86_update
+    - name: Mount addon_configs
+      community.general.xml:
+        xmlstring: "{{ haos_x86_update.xmlstring }}"
+        xpath: /domain/devices
+        state: present
+        add_children:
+          - filesystem:
+              type: mount
+              accessmode: passthrough # cspell:words accessmode
+              _:
+                - driver:
+                    type: virtiofs
+                - source:
+                    dir: /mnt/data/supervisor/addon_configs
+                - target:
+                    dir: /mnt/data/supervisor/addon_configs
+      register: haos_x86_update
+    - name: Set final HAOS XML update
+      ansible.builtin.set_fact:
+        haos_xml_update: "{{ haos_x86_update }}"
+- name: Show updated HAOS XML
+  ansible.builtin.debug:
+    var: haos_xml_update.xmlstring
+- name: Define updated HAOS domain
+  community.libvirt.virt:
+    name: haos
+    command: define
+    xml: "{{ haos_xml_update.xmlstring.split('\n')[1:] | join('\n') }}"
+- name: Restart HAOS guest
+  community.libvirt.virt:
+    name: haos
+    state: running
+    autostart: true

@@ -1,0 +1,40 @@
+# -*- mode: ansible -*-
+# customize HAOS VM image for the target architecture
+
+# these directives ensure that this runs only on the control node
+# delegate_to: localhost
+# connection: local
+---
+- name: Determine HA OS version
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL https://api.github.com/repos/home-assistant/operating-system/releases/latest | jq -r .tag_name
+  delegate_to: localhost
+  args:
+    executable: /bin/bash
+  register: result
+  changed_when: result.rc == 0
+- name: Set latest HA OS version
+  ansible.builtin.set_fact:
+    haos_version: "{{ result.stdout.strip() }}"
+- name: Set latest HA OS release for architecture
+  ansible.builtin.set_fact:
+    haos_qcow: "{{ 'haos_' + ('generic-aarch64' if ansible_facts['architecture'] == 'aarch64' else 'ova') + '-' + haos_version + '.qcow2' }}"
+- name: Download HA OS image
+  ansible.builtin.get_url:
+    url: https://github.com/home-assistant/operating-system/releases/download/{{ haos_version }}/{{ haos_qcow + '.xz' }}
+    dest: files/{{ haos_qcow + '.xz' }}
+    mode: u=rw,go=r
+- name: Serialize customization
+  throttle: 1
+  block:
+    - name: Customize HA OS image
+      ansible.builtin.command: make files/{{ haos_qcow }}
+      args:
+        creates: files/{{ haos_qcow }}
+      environment:
+        HOST: "{{ haos.HOST | default('') }}"
+- name: Reset customization
+  ansible.builtin.set_fact:
+    haos_qcow: "{{ haos.HOST }}.qcow2"
+  when: haos.HOST is defined

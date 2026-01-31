@@ -1,0 +1,3 @@
+ansible_user: root
+ansible_remote_tmp: /tmp/.ansible/
+ansible_scp_extra_args: -O

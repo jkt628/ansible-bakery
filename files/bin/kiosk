@@ -10,4 +10,8 @@ unclutter -idle 0.5 -root &
 
 # disable chromium warnings and start in full screen mode
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"Crashed"/"exit_type":"Normal"/; s/"crashed":true/"crashed":false/' /home/"$USER"/.config/chromium/Default/Preferences
-(chromium --noerrdialogs --disable-infobars --start-fullscreen http://localhost:8123/ &)
+# shellcheck disable=SC1091
+. /etc/profile.d/qemu-hook-haos.sh
+(chromium --noerrdialogs --disable-infobars --start-fullscreen "http://$HAOS_IP:8123/" &)
+
+# cSpell:words dpms infobars noblank noerrdialogs xset

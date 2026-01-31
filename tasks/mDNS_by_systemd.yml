@@ -42,5 +42,24 @@
     src: /usr/lib/systemd/resolv.conf
     force: true
   register: resolv_conf
+- name: Create mDNS override for systemd-networkd
+  ansible.builtin.copy:
+    dest: /etc/systemd/network/mDNS.override
+    mode: u=rw,go=r
+    content: |
+      [Network]
+      MulticastDNS=yes
+- name: Override systemd-networkd configuration
+  ansible.builtin.shell:
+    cmd: |
+      for d in /run/systemd/network /etc/systemd/network; do
+        cd $d || continue
+        for f in *.network; do
+          mkdir -p /etc/systemd/network/$f.d
+          ln /etc/systemd/network/mDNS.override /etc/systemd/network/$f.d/override.conf
+        done
+      done
+      systemctl try-restart systemd-networkd
+  changed_when: false
 - include_tasks: tasks/mDNS_by_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
-  when: '"network-manager" in ansible_facts.packages and avahi.changed and resolved_conf.changed and stub.changed and resolv_conf.changed'
+  when: '"network-manager" in ansible_facts.packages and (avahi.changed or resolved.changed or stub.changed or resolv_conf.changed)'

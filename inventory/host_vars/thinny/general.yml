@@ -1,0 +1,5 @@
+desktop: lxqt
+haos:
+  memory: 3072
+  vcpus: 3
+  HOST: haos-thinny

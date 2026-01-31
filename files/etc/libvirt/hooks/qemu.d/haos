@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Hook script for libvirt/qemu to manage custom actions on VM lifecycle events
+# See https://libvirt.org/hooks.html for more details.
+
+# virsh deadlocks during execution of this script, so the strategy is:
+# started: start a child and return immediately
+# child: wait for domifaddr and create iptables chains for the rules
+# stopped: remove iptables chains; this can be done without deadlock
+
+# cSpell:words dnat domifaddr dport dumpxml prerouting virsh
+
+VM_NAME="$1"
+EVENT="$2"
+SUB="$3"
+EXTRA="$4"
+
+guest_ip() {
+	virsh domifaddr "$VM_NAME" | awk 'BEGIN {x=1} /ipv4/ {sub("/.*", ""); print $4; x=0} END {exit x}'
+}
+
+guest_bridge() {
+	sed -n "/.*bridge='/{s///; s/'.*//; p; q;}" <<<"$EXTRA"
+}
+
+declare -a ports
+
+case "$VM_NAME" in
+haos) ports=(1883 8123 22222) ;;
+*) exit 0 ;;
+esac
+
+chain="hook-${VM_NAME}"
+declare -A tables=([filter]=FORWARD [nat]=PREROUTING)
+profile=/etc/profile.d/qemu-hook-${VM_NAME}.sh
+
+case "$EVENT" in
+stopped | reconnect)
+	for table in "${!tables[@]}"; do
+		iptables -t "$table" -F "$chain" || :
+		iptables -t "$table" -D "${tables[$table]}" -j "$chain" || :
+		iptables -t "$table" -X "$chain" || :
+	done
+	rm -f "$profile"
+	;;&
+started | reconnect)
+	if [ "$EXTRA" == '-' ]; then
+		# this is the parent process; read the XML, spawn a child and return
+		if ! [ -t 0 ]; then
+			IFS= read -r -d '' EXTRA
+		else
+			EXTRA=$(virsh dumpxml "$VM_NAME")
+		fi
+		(sleep 2; "$0" "$VM_NAME" "$EVENT" "$SUB" "$EXTRA"&) </dev/null >&/dev/null &
+		disown
+		exit 0
+	fi
+
+	# this is the child process; wait for the IP and set up rules
+	while ! ip=$(guest_ip); do
+		sleep 1
+	done
+	bridge=$(guest_bridge)
+
+	for table in "${!tables[@]}"; do
+		iptables -t "$table" -N "$chain"
+		iptables -t "$table" -I "${tables[$table]}" -j "$chain"
+		for port in "${ports[@]}"; do
+			case "$table" in
+			filter) iptables -t "$table" -A "$chain" -o "$bridge" -p tcp -d "$ip" --dport "$port" -j ACCEPT ;;
+			nat) iptables -t "$table" -A "$chain" -p tcp --dport "$port" -j DNAT --to-destination "$ip:$port" ;;
+			esac
+		done
+	done
+	echo "${VM_NAME^^}_IP=$ip" >"$profile"
+	;;
+esac
