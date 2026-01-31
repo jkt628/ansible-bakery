@@ -1,7 +1,7 @@
 # -*- mode: ansible -*-
 ---
 - name: Remove interfaces
-  ansible.builtin.command: rm -f /etc/network/interfaces*
+  ansible.builtin.command: rm -rf /etc/network/interfaces*
   changed_when: false
   register: interfaces
 - name: Remove section ifupdown from NetworkManager
@@ -20,9 +20,10 @@
     name: NetworkManager
     state: restarted
 - name: Remove ifupdown
-  ansible.builtin.package:
+  ansible.builtin.apt:
     name: "{{ item }}"
     state: absent
+    purge: true
   with_items:
     - ifupdown
     - ethtool
