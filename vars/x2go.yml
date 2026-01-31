@@ -1,4 +1,0 @@
-remote_desktop_packages:
-  - chromium
-  - lxde # x2go is incompatible with lxqt
-  - x2goserver-xsession

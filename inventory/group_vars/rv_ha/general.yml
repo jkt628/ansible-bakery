@@ -4,7 +4,3 @@ juntek_monitor_packages:
 - python3-paho-mqtt
 - python3-serial
 - python3-yaml
-remote_desktop_packages:
-- chromium
-- lxde
-- x2goserver-xsession

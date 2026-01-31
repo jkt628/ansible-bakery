@@ -13,9 +13,7 @@ all:
     bt_dev:
       hosts:
         thinny:
-          desktop: lxqt
         radxy:
-          desktop: lxqt
     ha:
       hosts:
         home-assistant:

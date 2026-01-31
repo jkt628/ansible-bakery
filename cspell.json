@@ -37,6 +37,8 @@
 		"lineinfile",
 		"llmnr",
 		"lxde",
+		"lxqt",
+		"macaddress",
 		"mdns",
 		"mgmt",
 		"mosquitto",

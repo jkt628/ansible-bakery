@@ -1,0 +1,18 @@
+# cspell:disable
+remote_desktop_packages:
+- chromium
+- dmz-cursor-theme
+- gvfs
+- gvfs-backends
+- locales
+- obconf-qt
+- openbox
+- papirus-icon-theme
+- polkitd
+- qpdfview
+- qt6-svg-plugins
+- screengrab
+- task-lxqt-desktop
+- xdg-desktop-portal-lxqt
+- xorgxrdp
+- xrdp

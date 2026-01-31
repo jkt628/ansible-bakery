@@ -1,7 +1,5 @@
 # -*- mode: ansible -*-
 ---
-- name: Install remote desktop
-  ansible.builtin.package:
-    name: "{{ item }}"
-  with_items: "{{ remote_desktop_packages }}"
-  when: item not in ansible_facts.packages
+- include_tasks: tasks/install_packages.yml # noqa: fqcn[action-core] name[missing]
+  vars:
+    packages: "{{ remote_desktop_packages }}"
