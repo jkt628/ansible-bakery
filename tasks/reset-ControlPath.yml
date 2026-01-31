@@ -1,0 +1,10 @@
+# -*- mode: ansible -*-
+---
+- name: Reset ansible ControlPath
+  delegate_to: localhost
+  connection: local
+  block:
+    - name: Remove ansible ControlPath directory
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') + '/.ansible/cp/' }}"
+        state: absent
