@@ -1,0 +1,8 @@
+# -*- mode: ansible -*-
+- name: Show ansible_facts
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Display ansible_facts
+      ansible.builtin.debug:
+        var: ansible_facts
