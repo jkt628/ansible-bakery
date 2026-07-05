@@ -5,6 +5,7 @@ all:
     local:
       hosts:
         localhost:
+          ansible_connection: local
     bare:
       hosts:
         orangepizero2w:

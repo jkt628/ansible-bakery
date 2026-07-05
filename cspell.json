@@ -9,6 +9,7 @@
 		"autologin",
 		"automount",
 		"avahi",
+		"blakeblackshear",
 		"bleno",
 		"blockinfile",
 		"bluetoothctl",
@@ -43,6 +44,7 @@
 		"libnetplan",
 		"lineinfile",
 		"llmnr",
+		"localtime",
 		"lxde",
 		"lxqt",
 		"macaddress",
@@ -55,6 +57,7 @@
 		"networkd",
 		"nmcli",
 		"nmconnection",
+		"nofail",
 		"noqa",
 		"nosleep",
 		"nrfutil",
@@ -82,7 +85,9 @@
 		"sshfs",
 		"sysname",
 		"sysrq",
+		"sysstat",
 		"systime",
+		"tmpfs",
 		"udevadm",
 		"uefi",
 		"vcpus",
@@ -91,6 +96,7 @@
 		"virtiofs",
 		"virtiofsd",
 		"wlan",
+		"xscreensaver",
 		"xsession"
 	]
 }

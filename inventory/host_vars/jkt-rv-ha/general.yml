@@ -1,0 +1,4 @@
+haos:
+  HOST: haos-jkt-rv
+  vcpus: 2
+  memory: 1024

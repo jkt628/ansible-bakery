@@ -12,6 +12,7 @@
     name: "{{ item }}"
   with_items:
     - chromium
+    - sysstat
     - unclutter
   when: item not in ansible_facts.packages
 - name: Configure kiosk
@@ -26,3 +27,11 @@
     minute: "*"
     job: /home/{{ ansible_user }}/bin/kiosk_check
     user: "{{ ansible_user }}"
+- name: Add to Desktop
+  ansible.builtin.file:
+    src: "/home/{{ ansible_user }}/.config/autostart/kiosk.desktop"
+    dest: "/home/{{ ansible_user }}/Desktop/kiosk.desktop"
+    owner: "{{ ansible_user }}"
+    mode: ug=rw,o=r
+    state: hard
+    force: true

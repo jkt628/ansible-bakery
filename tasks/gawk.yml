@@ -1,6 +1,12 @@
 # -*- mode: ansible -*-
 ---
 # color me old fashioned
+- name: Install gawk
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - gawk
+  when: item not in ansible_facts.packages
 - name: Purge mawk
   ansible.builtin.apt:
     name: "{{ item }}"
@@ -9,9 +15,3 @@
   with_items:
     - mawk
   when: item in ansible_facts.packages
-- name: Install gawk
-  ansible.builtin.package:
-    name: "{{ item }}"
-  with_items:
-    - gawk
-  when: item not in ansible_facts.packages

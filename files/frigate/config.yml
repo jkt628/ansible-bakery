@@ -1,3 +1,4 @@
+# -*- mode: ansible-jinja -*-
 cameras:
   front:
     enabled: true
@@ -37,38 +38,52 @@ cameras:
     motion:
       mask: 0,1,0.194,0.998,0.404,0.39,0.349,0,0,0
 
+{% if inventory_hostname != 'thinny' %}
 detect:
   enabled: true
   width: 2560
   height: 1440
 
 detectors:
-  coral:
-    type: edgetpu
-    device: pci
+  ov_0:
+    type: openvino
+    device: GPU
+
+model:
+  width: 300
+  height: 300
+  input_tensor: nhwc
+  input_pixel_format: bgr
+  path: /openvino-model/ssdlite_mobilenet_v2.xml
+  labelmap_path: /openvino-model/coco_91cl_bkgr.txt
+{% endif %}
 
 ffmpeg:
+{% if inventory_hostname == 'thinny' %}
+  hwaccel_args: preset-vaapi
+{% else %}
   hwaccel_args: preset-intel-qsv-h264
+{% endif %}
   input_args: preset-rtsp-restream
 
 go2rtc:
   streams:
     front:
       # 60:83:E7:C3:3B:DC
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ front_password }}@192.168.11.251:554/stream1
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ front_password }}@192.168.11.251:554/{{ camera_quality | default('stream1') }}
       - ffmpeg:front#hardware
     driveway:
       # 60:83:E7:C3:38:AC
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ driveway_password }}@192.168.11.252:554/stream1
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ driveway_password }}@192.168.11.252:554/{{ camera_quality | default('stream1') }}
       - ffmpeg:driveway#hardware
     back:
       # 60:83:E7:C3:39:07
-      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ back_password }}@192.168.11.253:554/stream1
+      - rtsp://tp-link-tapo@jkth628.fastmail.us:{{ back_password }}@192.168.11.253:554/{{ camera_quality | default('stream1') }}
       - ffmpeg:back#hardware
 
 mqtt:
   enabled: true
-  host: core-mosquitto
+  host: "{{ haos.HOST }}.local"
   user: frigate-nvr
   password: "{{ frigate_nvr_password }}"
 

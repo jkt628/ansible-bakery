@@ -19,7 +19,7 @@
     haos_version: "{{ result.stdout.strip() }}"
 - name: Set latest HA OS release for architecture
   ansible.builtin.set_fact:
-    haos_qcow: "{{ 'haos_' + ('generic-aarch64' if ansible_facts['architecture'] == 'aarch64' else 'ova') + '-' + haos_version + '.qcow2' }}"
+    haos_qcow: "{{ 'haos_' + ('generic-aarch64' if ansible_facts.architecture == 'aarch64' else 'ova') + '-' + haos_version + '.qcow2' }}"
 - name: Download HA OS image
   ansible.builtin.get_url:
     url: https://github.com/home-assistant/operating-system/releases/download/{{ haos_version }}/{{ haos_qcow + '.xz' }}
@@ -29,12 +29,9 @@
   throttle: 1
   block:
     - name: Customize HA OS image
-      ansible.builtin.command: make files/{{ haos_qcow }}
+      ansible.builtin.command: make -C files {{ haos.HOST }}.tar.xz
       args:
-        creates: files/{{ haos_qcow }}
+        creates: files/{{ haos.HOST }}.tar.xz
       environment:
-        HOST: "{{ haos.HOST | default('') }}"
-- name: Reset customization
-  ansible.builtin.set_fact:
-    haos_qcow: "{{ haos.HOST }}.qcow2"
-  when: haos.HOST is defined
+        SRC: "{{ haos_qcow }}"
+        TARGET: "{{ haos.HOST }}.qcow2"

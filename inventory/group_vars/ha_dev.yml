@@ -19,3 +19,4 @@ backports_packages:
   - libgammu-dev
   - build-essential
   - golang
+camera_quality: stream2

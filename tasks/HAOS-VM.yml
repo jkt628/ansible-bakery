@@ -7,7 +7,7 @@
     - include_tasks: tasks/haos-customize.yml # noqa: fqcn[action-core] name[missing]
 - name: Display HAOS image details
   ansible.builtin.debug:
-    msg: "Customized HAOS image file: files/{{ haos_qcow }}"
+    msg: "Customized HAOS image file: files/{{ haos.HOST }}"
 - name: Create hook directory
   ansible.builtin.file:
     path: /etc/libvirt/hooks/qemu.d
@@ -52,10 +52,10 @@
     name: default
     autostart: true
 - name: Install HAOS image
-  ansible.builtin.copy:
-    src: files/{{ haos_qcow }}
-    dest: /var/lib/libvirt/images/{{ haos_qcow }}
-    force: false
+  ansible.builtin.unarchive:
+    src: files/{{ haos.HOST }}.tar.xz
+    dest: /var/lib/libvirt/images
+    creates: /var/lib/libvirt/images/{{ haos.HOST }}.qcow2
     owner: root
     group: root
     mode: u=rw,go=
@@ -72,13 +72,13 @@
     controller:
       type: virtio-serial
     disks:
-      - path: /var/lib/libvirt/images/{{ haos_qcow }}
+      - path: /var/lib/libvirt/images/{{ haos.HOST }}.qcow2
     graphics:
       type: "{{ 'spice' if ansible_facts['architecture'] == 'x86_64' else 'vnc' }}"
     import: true
     memory: "{{ haos.memory | default(1024) }}"
     memory_opts:
-      current_memory: 1024
+      current_memory: "{{ haos.memory | default(1024) }}"
     memorybacking: # cspell:words memorybacking
       access:
         mode: shared
@@ -98,6 +98,7 @@
     state: destroyed
 
 # Customize HAOS domain XML
+# TODO: make this idempotent
 - name: Get HAOS domain XML
   community.libvirt.virt:
     name: haos

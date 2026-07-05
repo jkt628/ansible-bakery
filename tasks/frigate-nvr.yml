@@ -1,8 +1,26 @@
 # -*- mode: ansible -*-
 # frigate-nvr records cameras and detects motion
 ---
-- name: Create supervisor control script
+- include_tasks: tasks/docker-ce.yml # noqa: fqcn[action-core] name[missing]
+- name: Create frigate directory
+  ansible.builtin.file:
+    path: /home/{{ ansible_user }}/frigate
+    state: directory
+    mode: u=rwx,go=
+    owner: "{{ ansible_user }}"
+- name: Create compose for frigate
   ansible.builtin.template:
-    src: files/mnt/data/supervisor/addon_configs/ccab4aaf_frigate-fa/config.yml
-    dest: /mnt/data/supervisor/addon_configs/ccab4aaf_frigate-fa/config.yml
+    src: files/frigate/compose.yml
+    dest: /home/{{ ansible_user }}/frigate/compose.yml
     mode: u=rw,go=
+    owner: "{{ ansible_user }}"
+- name: Create frigate configuration
+  ansible.builtin.template:
+    src: files/frigate/config.yml
+    dest: /home/{{ ansible_user }}/frigate/config.yml
+    mode: u=rw,go=
+    owner: "{{ ansible_user }}"
+- name: Start frigate
+  community.docker.docker_compose_v2:
+    project_src: /home/{{ ansible_user }}/frigate
+    state: present

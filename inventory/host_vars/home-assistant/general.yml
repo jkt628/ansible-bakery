@@ -1,3 +1,4 @@
-homeassistant_machine: generic-x86-64
-wifi_interface: wlx90de8067814b
-wifi_ssid: jkt-outdoor
+haos:
+  memory: 10240
+  vcpus: 6
+  HOST: haos

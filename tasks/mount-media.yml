@@ -1,0 +1,17 @@
+# -*- mode: ansible -*-
+---
+# mount media drive
+- name: Ensure media directory exists
+  ansible.builtin.file:
+    path: /mnt/data/supervisor/media
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,go=rx
+- name: Mount media
+  ansible.posix.mount:
+    src: UUID=a3a353ed-d959-46ba-9294-c63cfb0f9425
+    path: /mnt/data/supervisor/media
+    fstype: ext4
+    opts: defaults,errors=remount-ro,nofail
+    state: mounted

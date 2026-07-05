@@ -8,8 +8,10 @@
     - include_tasks: tasks/apt_upgrade.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/threads-max.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/editor.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/%sudo.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/mDNS_by_systemd.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/remove_netplan.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/install_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/mDNS_by_NetworkManager.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/NetworkManager_system-connections.yml # noqa: fqcn[action-core] name[missing]
       vars:
         items:
@@ -17,9 +19,9 @@
           - jkt-rv
 #        wifi:
 #          - band=bg
-    - include_tasks: tasks/connectivity_check.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/docker-ce.yml # noqa: fqcn[action-core] name[missing]
-    - include_tasks: tasks/install_remote_desktop.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/remove_netplan.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/enable_bluetooth.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/install_juntek_monitor.yml # noqa: fqcn[action-core] name[missing]
     - include_tasks: tasks/generator.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/HAOS-VM.yml # noqa: fqcn[action-core] name[missing]
+    - include_tasks: tasks/install_remote_desktop.yml # noqa: fqcn[action-core] name[missing]
