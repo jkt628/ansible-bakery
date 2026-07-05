@@ -174,7 +174,32 @@
                 - source:
                     dir: /mnt/data/supervisor/addon_configs
                 - target:
-                    dir: /mnt/data/supervisor/addon_configs
+      register: haos_x86_update
+    - name: Set final HAOS XML update
+      ansible.builtin.set_fact:
+        haos_xml_update: "{{ haos_x86_update }}"
+- name: Customize for home-assistant
+  when: inventory_hostname == 'home-assistant'
+  # WARNING: register applies even when skipped
+  block:
+    - name: Assign ZBT-2
+      community.general.xml:
+        xmlstring: "{{ haos_xml_update.xmlstring }}"
+        xpath: /domain/devices
+        state: present
+        add_children:
+          - hostdev: # cspell:words hostdev
+              mode: subsystem
+              type: usb
+              managed: 'yes'
+              _:
+                - source:
+                    startupPolicy: optional
+                    _:
+                      - vendor:
+                          id: '0x303a'
+                      - product:
+                          id: '0x831a'
       register: haos_x86_update
     - name: Set final HAOS XML update
       ansible.builtin.set_fact:
