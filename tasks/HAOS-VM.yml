@@ -122,9 +122,9 @@
         owner: root
         group: root
         mode: u=rwx,go=rx
-    - name: Ensure addon_configs directory exists
+    - name: Ensure app_configs directory exists
       ansible.builtin.file:
-        path: /mnt/data/supervisor/addon_configs
+        path: /mnt/data/supervisor/app_configs
         state: directory
         owner: root
         group: root
@@ -159,7 +159,7 @@
                 - target:
                     dir: /mnt/data/supervisor/media
       register: haos_x86_update
-    - name: Mount addon_configs
+    - name: Mount app_configs
       community.general.xml:
         xmlstring: "{{ haos_x86_update.xmlstring }}"
         xpath: /domain/devices
@@ -172,8 +172,9 @@
                 - driver:
                     type: virtiofs
                 - source:
-                    dir: /mnt/data/supervisor/addon_configs
+                    dir: /mnt/data/supervisor/app_configs
                 - target:
+                    dir: /mnt/data/supervisor/app_configs
       register: haos_x86_update
     - name: Set final HAOS XML update
       ansible.builtin.set_fact:
